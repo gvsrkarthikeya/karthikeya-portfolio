@@ -51,7 +51,7 @@ completed; do not mark a task complete without testing it.
 
 -   [x] Minimalism
 -   [x] Flat Design
--   [ ] Material Design
+-   [x] Material Design
 -   [ ] Glassmorphism
 -   [ ] Neumorphism
 -   [ ] Neubrutalism
