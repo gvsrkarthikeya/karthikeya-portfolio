@@ -1,0 +1,94 @@
+// Neumorphism: soft raised and pressed-in surfaces on a single base colour.
+// Text is high contrast, primary actions are solid fills, and controls keep a
+// visible border so their edges never depend on soft shadows alone.
+[data-design='neumorphism'][data-bs-theme='light'] {
+  --color-bg: #e4e9f0;
+  --color-surface: #e4e9f0;
+  --color-surface-raised: #d8dfe9;
+  --color-text: #1b2433;
+  --color-text-muted: #475166;
+  --color-primary: #2250bd;
+  --color-on-primary: #fff;
+  --color-accent: #173a8a;
+  --color-border: #c3ccd9;
+  --shadow-card: 8px 8px 16px #bfc7d4, -8px -8px 16px #fff;
+  --shadow-control: 4px 4px 8px #bfc7d4, -4px -4px 8px #fff;
+  --shadow-inset: inset 3px 3px 6px #bfc7d4, inset -3px -3px 6px #fff;
+  --radius-card: 1.25rem;
+  --radius-control: 0.875rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #173a8a;
+}
+
+[data-design='neumorphism'][data-bs-theme='dark'] {
+  --color-bg: #2a2f3a;
+  --color-surface: #2a2f3a;
+  --color-surface-raised: #222733;
+  --color-text: #eef1f6;
+  --color-text-muted: #b3bccb;
+  --color-primary: #8fb4ff;
+  --color-on-primary: #0d1b3d;
+  --color-accent: #c3d6ff;
+  --color-border: #434a59;
+  --shadow-card: 8px 8px 16px #1d2129, -8px -8px 16px #373d4b;
+  --shadow-control: 4px 4px 8px #1d2129, -4px -4px 8px #373d4b;
+  --shadow-inset: inset 3px 3px 6px #1d2129, inset -3px -3px 6px #373d4b;
+  --radius-card: 1.25rem;
+  --radius-control: 0.875rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #c3d6ff;
+}
+
+[data-design='neumorphism'][data-bs-theme] {
+  .site-header {
+    background-color: var(--color-bg);
+  }
+
+  // Header controls look pressed in and rise when hovered or focused.
+  .theme-toggle,
+  .style-selector__trigger {
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-inset);
+    transition: box-shadow 150ms ease-out;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      border-color: var(--color-border);
+      box-shadow: var(--shadow-control);
+    }
+  }
+
+  .style-selector__menu {
+    background-color: var(--color-bg);
+  }
+
+  .style-selector__item[aria-checked='true'] {
+    box-shadow: var(--shadow-inset);
+  }
+
+  // Chips are soft pressed tiles; cards and buttons are raised.
+  .skills__tag,
+  .projects__tag {
+    box-shadow: var(--shadow-inset);
+  }
+
+  .social-links__link {
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-control);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-design='neumorphism'][data-bs-theme] {
+    .theme-toggle,
+    .style-selector__trigger {
+      transition: none;
+    }
+  }
+}
