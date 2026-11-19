@@ -50,7 +50,7 @@ completed; do not mark a task complete without testing it.
 ## Phase 5 --- Design systems
 
 -   [x] Minimalism
--   [ ] Flat Design
+-   [x] Flat Design
 -   [ ] Material Design
 -   [ ] Glassmorphism
 -   [ ] Neumorphism
