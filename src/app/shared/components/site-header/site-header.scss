@@ -3,6 +3,13 @@
 }
 
 @media (min-width: 992px) {
+  :host {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    display: block;
+  }
+
   .site-header .navbar-nav {
     gap: 0.5rem;
   }

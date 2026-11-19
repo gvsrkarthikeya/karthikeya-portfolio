@@ -1,3 +1,7 @@
+.hero:focus {
+  outline: none;
+}
+
 .hero__initials {
   display: grid;
   place-items: center;
