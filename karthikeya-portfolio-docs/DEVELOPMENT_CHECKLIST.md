@@ -35,9 +35,9 @@ completed; do not mark a task complete without testing it.
 -   [x] About
 -   [x] Experience
 -   [x] Skills
--   [ ] Projects
--   [ ] Education
--   [ ] Contact
+-   [x] Projects
+-   [x] Education
+-   [x] Contact
 
 ## Phase 4 --- Appearance engine
 

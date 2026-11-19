@@ -1,0 +1,34 @@
+<section id="projects" class="section py-5" aria-labelledby="projects-heading">
+  <h2 id="projects-heading" class="h3 fw-bold mb-4">Projects</h2>
+  <div class="row g-3">
+    @for (project of projects(); track project.title) {
+      <div class="col-12 col-md-6">
+        <article class="projects__card h-100 p-3 d-flex flex-column">
+          <h3 class="h5 mb-1">{{ project.title }}</h3>
+          <p class="text-body-secondary small mb-2">{{ project.organization }}</p>
+          <p class="mb-2">{{ project.description }}</p>
+          <ul class="ps-3 mb-3">
+            @for (point of project.contributions; track point) {
+              <li>{{ point }}</li>
+            }
+          </ul>
+          <ul class="projects__tech list-unstyled d-flex flex-wrap gap-2 mt-auto mb-0">
+            @for (tech of project.technologies; track tech) {
+              <li class="projects__tag">{{ tech }}</li>
+            }
+          </ul>
+          @if (project.url; as url) {
+            <a
+              class="projects__link mt-3"
+              [href]="url"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="project.title + ' (opens in a new tab)'"
+              >View project</a
+            >
+          }
+        </article>
+      </div>
+    }
+  </div>
+</section>
