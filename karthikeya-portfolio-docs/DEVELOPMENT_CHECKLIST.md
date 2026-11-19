@@ -85,6 +85,18 @@ completed; do not mark a task complete without testing it.
 -   [x] Verify public deployment
 -   [x] Update README with live URL
 
+## Update checklist --- when the job, company or position changes
+
+Whenever the company name or position is updated in
+`src/app/core/data/portfolio.data.ts` (headline, summary, experience),
+the assistant must ask whether to update these too:
+
+-   [ ] Page title in `src/index.html` (`<title>` and `og:title`)
+-   [ ] Meta description and `og:description` in `src/index.html`
+-   [ ] README description
+-   [ ] GitHub repo About description and profile website text
+-   [ ] Resume PDF in `public/resume/`
+
 ## Current checkpoint
 
 Phases 1 and 2 are complete: the Angular app runs locally with
