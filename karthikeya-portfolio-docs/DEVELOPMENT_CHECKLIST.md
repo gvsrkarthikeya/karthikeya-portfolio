@@ -49,7 +49,7 @@ completed; do not mark a task complete without testing it.
 
 ## Phase 5 --- Design systems
 
--   [ ] Minimalism
+-   [x] Minimalism
 -   [ ] Flat Design
 -   [ ] Material Design
 -   [ ] Glassmorphism
