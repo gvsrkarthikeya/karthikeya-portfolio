@@ -54,7 +54,7 @@ completed; do not mark a task complete without testing it.
 -   [x] Material Design
 -   [x] Glassmorphism
 -   [x] Neumorphism
--   [ ] Neubrutalism
+-   [x] Neubrutalism
 -   [ ] Skeuomorphism
 -   [ ] Bento Grid
 -   [ ] Verify all 16 combinations
