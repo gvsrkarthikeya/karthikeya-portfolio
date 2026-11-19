@@ -84,4 +84,21 @@ describe('SiteHeader', () => {
 
     expect(control?.closest('#primary-menu')).not.toBeNull();
   });
+
+  it('projects headerAction content outside the collapsible menu', () => {
+    @Component({
+      imports: [SiteHeader],
+      template: `<app-site-header brand="X" [navItems]="[]">
+        <button headerAction id="act">a</button>
+        <button id="ctl">c</button>
+      </app-site-header>`,
+    })
+    class Host {}
+
+    const root = TestBed.createComponent(Host).nativeElement as HTMLElement;
+
+    expect(root.querySelector('#act')).not.toBeNull();
+    expect(root.querySelector('#act')?.closest('#primary-menu')).toBeNull();
+    expect(root.querySelector('#ctl')?.closest('#primary-menu')).not.toBeNull();
+  });
 });
