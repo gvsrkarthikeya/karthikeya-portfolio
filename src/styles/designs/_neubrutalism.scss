@@ -1,0 +1,178 @@
+// Neubrutalism: thick outlines, hard offset shadows and bold type.
+[data-design='neubrutalism'][data-bs-theme='light'] {
+  --color-bg: #fff8e7;
+  --color-surface: #fff;
+  --color-surface-raised: #ffefb8;
+  --color-text: #000;
+  --color-text-muted: #3d3d3d;
+  --color-primary: #1d3bd6;
+  --color-on-primary: #fff;
+  --color-accent: #ff6b9d;
+  --color-border: #000;
+  --shadow-card: 6px 6px 0 #000;
+  --shadow-control: 3px 3px 0 #000;
+  --radius-card: 0.25rem;
+  --radius-control: 0.25rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #1d3bd6;
+  --nb-border: 3px solid #000;
+  --nb-fill: #ffd23f;
+  --nb-fill-text: #000;
+}
+
+[data-design='neubrutalism'][data-bs-theme='dark'] {
+  --color-bg: #111;
+  --color-surface: #1b1b1b;
+  --color-surface-raised: #2a2a2a;
+  --color-text: #f5f5f5;
+  --color-text-muted: #c4c4c4;
+  --color-primary: #ffd23f;
+  --color-on-primary: #111;
+  --color-accent: #ff8fb8;
+  --color-border: #f5f5f5;
+  --shadow-card: 6px 6px 0 #ffd23f;
+  --shadow-control: 3px 3px 0 #ffd23f;
+  --radius-card: 0.25rem;
+  --radius-control: 0.25rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #ff8fb8;
+  --nb-border: 3px solid #f5f5f5;
+  --nb-fill: #ffd23f;
+  --nb-fill-text: #111;
+}
+
+[data-design='neubrutalism'][data-bs-theme] {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .navbar-brand {
+    font-weight: 800;
+  }
+
+  .site-header {
+    border-bottom: var(--nb-border) !important;
+  }
+
+  .about__fact,
+  .skills__group,
+  .projects__card,
+  .education__cert,
+  .education__degree,
+  .style-selector__menu {
+    border: var(--nb-border);
+  }
+
+  .skills__tag,
+  .projects__tag,
+  .theme-toggle,
+  .style-selector__trigger,
+  .social-links__link,
+  .hero__cta,
+  .contact__resume {
+    border: 2px solid var(--color-border);
+    font-weight: 600;
+  }
+
+  .theme-toggle,
+  .style-selector__trigger {
+    color: var(--color-text);
+    background-color: var(--color-surface);
+  }
+
+  // Solid buttons use the loud fill in both themes; the primary token stays readable as text.
+  .hero__cta--solid,
+  .contact__resume {
+    color: var(--nb-fill-text);
+    background-color: var(--nb-fill);
+
+    &:hover,
+    &:focus-visible {
+      color: #000;
+      background-color: var(--color-accent);
+      border-color: var(--color-border);
+    }
+  }
+
+  .hero__cta--outline,
+  .theme-toggle,
+  .style-selector__trigger,
+  .social-links__link {
+    border-color: var(--color-border);
+  }
+
+  // Bordered links must align with the content edge instead of the text edge.
+  .social-links {
+    margin-left: 0;
+  }
+
+  .hero__initials {
+    border: var(--nb-border);
+    box-shadow: var(--shadow-control);
+  }
+
+  // Controls shift toward their shadow on hover and sit flat when pressed.
+  .hero__cta,
+  .contact__resume,
+  .theme-toggle,
+  .style-selector__trigger,
+  .social-links__link {
+    transition:
+      transform 100ms ease-out,
+      box-shadow 100ms ease-out;
+
+    &:hover,
+    &:focus-visible {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--color-border);
+    }
+
+    &:active {
+      transform: translate(3px, 3px);
+      box-shadow: none;
+    }
+  }
+
+  .style-selector__item[aria-checked='true'] {
+    background-color: var(--nb-fill);
+    color: var(--nb-fill-text);
+  }
+
+  .style-selector__item:hover,
+  .style-selector__item:focus-visible {
+    color: var(--nb-fill-text);
+    background-color: var(--color-accent);
+  }
+}
+
+@media (max-width: 575.98px) {
+  [data-design='neubrutalism'][data-bs-theme] {
+    --shadow-card: 4px 4px 0 var(--color-border);
+  }
+
+  [data-design='neubrutalism'][data-bs-theme='dark'] {
+    --shadow-card: 4px 4px 0 #ffd23f;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-design='neubrutalism'][data-bs-theme] {
+    .hero__cta,
+    .contact__resume,
+    .theme-toggle,
+    .style-selector__trigger,
+    .social-links__link {
+      transition: none;
+
+      &:hover,
+      &:focus-visible,
+      &:active {
+        transform: none;
+      }
+    }
+  }
+}
