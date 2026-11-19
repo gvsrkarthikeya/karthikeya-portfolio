@@ -13,19 +13,19 @@ completed; do not mark a task complete without testing it.
 
 ## Phase 1 --- Environment
 
--   [ ] Verify Node.js version
--   [ ] Verify npm and Git
--   [ ] Verify Angular CLI availability or use `npx`
--   [ ] Create Angular project
--   [ ] Run app locally
--   [ ] Initialize baseline Git commit
+-   [x] Verify Node.js version
+-   [x] Verify npm and Git
+-   [x] Verify Angular CLI availability or use `npx`
+-   [x] Create Angular project
+-   [x] Run app locally
+-   [x] Initialize baseline Git commit
 
 ## Phase 2 --- Foundation
 
--   [ ] Install Bootstrap
--   [ ] Create folder structure
+-   [x] Install Bootstrap
+-   [x] Create folder structure
 -   [ ] Create models
--   [ ] Build application shell
+-   [x] Build application shell
 
 ## Phase 3 --- Shared UI and content
 

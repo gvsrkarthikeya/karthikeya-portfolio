@@ -15,10 +15,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render the portfolio application shell', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, karthikeya-portfolio');
+
+    expect(compiled.querySelector('main.app-shell')).toBeTruthy();
+    expect(compiled.querySelector('header')?.textContent).toContain('Portfolio');
   });
 });
