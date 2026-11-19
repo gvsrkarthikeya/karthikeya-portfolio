@@ -1,0 +1,159 @@
+// Bento Grid: modular, rounded tiles of varied sizes in a soft tinted palette.
+[data-design='bento'][data-bs-theme='light'] {
+  --color-bg: #eef0f7;
+  --color-surface: #fff;
+  --color-surface-raised: #e9e4fb;
+  --color-text: #1a1d2e;
+  --color-text-muted: #4a5068;
+  --color-primary: #5a3fc0;
+  --color-on-primary: #fff;
+  --color-accent: #432c9c;
+  --color-border: #d9dcea;
+  --shadow-card: 0 1px 2px rgb(26 29 46 / 8%);
+  --shadow-control: 0 1px 2px rgb(26 29 46 / 12%);
+  --radius-card: 1.25rem;
+  --radius-control: 0.75rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #5a3fc0;
+  --bento-tile-1: #fff;
+  --bento-tile-2: #e9e4fb;
+  --bento-tile-3: #dcf2f0;
+  --bento-tile-4: #fdeedd;
+}
+
+[data-design='bento'][data-bs-theme='dark'] {
+  --color-bg: #12131c;
+  --color-surface: #1c1e2b;
+  --color-surface-raised: #25203d;
+  --color-text: #eceefa;
+  --color-text-muted: #b4b9d0;
+  --color-primary: #b9a6ff;
+  --color-on-primary: #1f1550;
+  --color-accent: #d8cdff;
+  --color-border: #2f3245;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-control: 0 1px 2px rgb(0 0 0 / 50%);
+  --radius-card: 1.25rem;
+  --radius-control: 0.75rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #b9a6ff;
+  --bento-tile-1: #1c1e2b;
+  --bento-tile-2: #25203d;
+  --bento-tile-3: #16292c;
+  --bento-tile-4: #2d2318;
+}
+
+// Each card section becomes a grid: one column on phones, two on tablets, and
+// 12-column spans (7/5, 5/7, ...) on desktop. Only presentation changes; the
+// markup and reading order stay the same.
+[data-design='bento'][data-bs-theme] {
+  #about .row,
+  #skills .row,
+  #projects .row,
+  #education .row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 0;
+
+    > * {
+      width: auto;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .about__fact,
+  .skills__group,
+  .projects__card,
+  .education__degree {
+    background-color: var(--bento-tile-1);
+    border-color: var(--color-border);
+    box-shadow: none;
+  }
+
+  #about .row > :nth-child(4n + 2) > *,
+  #skills .row > :nth-child(4n + 2) > *,
+  #projects .row > :nth-child(4n + 2) > *,
+  #education .row > :nth-child(4n + 2) > * {
+    background-color: var(--bento-tile-2);
+  }
+
+  #about .row > :nth-child(4n + 3) > *,
+  #skills .row > :nth-child(4n + 3) > *,
+  #projects .row > :nth-child(4n + 3) > *,
+  #education .row > :nth-child(4n + 3) > * {
+    background-color: var(--bento-tile-3);
+  }
+
+  #about .row > :nth-child(4n + 4) > *,
+  #skills .row > :nth-child(4n + 4) > *,
+  #projects .row > :nth-child(4n + 4) > *,
+  #education .row > :nth-child(4n + 4) > * {
+    background-color: var(--bento-tile-4);
+  }
+
+  .projects__card {
+    padding: 1.25rem !important;
+  }
+
+  .skills__tag,
+  .projects__tag {
+    background-color: rgb(255 255 255 / 55%);
+  }
+
+  .site-header {
+    background-color: var(--color-bg);
+  }
+}
+
+[data-design='bento'][data-bs-theme='dark'] {
+  .skills__tag,
+  .projects__tag {
+    background-color: rgb(255 255 255 / 6%);
+  }
+}
+
+@media (min-width: 768px) {
+  [data-design='bento'][data-bs-theme] {
+    #about .row,
+    #skills .row,
+    #projects .row,
+    #education .row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    // The first project is the featured tile.
+    #projects .row > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  [data-design='bento'][data-bs-theme] {
+    #about .row,
+    #skills .row,
+    #projects .row,
+    #education .row {
+      grid-template-columns: repeat(12, 1fr);
+
+      > :nth-child(4n + 1),
+      > :nth-child(4n + 4) {
+        grid-column: span 7;
+      }
+
+      > :nth-child(4n + 2),
+      > :nth-child(4n + 3) {
+        grid-column: span 5;
+      }
+    }
+
+    #projects .row > :first-child {
+      grid-column: span 7;
+    }
+  }
+}
