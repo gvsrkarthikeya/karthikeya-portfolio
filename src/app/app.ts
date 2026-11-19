@@ -9,6 +9,7 @@ import { Hero } from './features/home/hero/hero';
 import { Projects } from './features/home/projects/projects';
 import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
+import { BackToTop } from './shared/components/back-to-top/back-to-top';
 import { SiteFooter } from './shared/components/site-footer/site-footer';
 import { StyleSelector } from './shared/components/style-selector/style-selector';
 import { ThemeToggle } from './shared/components/theme-toggle/theme-toggle';
@@ -27,6 +28,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
     Education,
     Contact,
     SiteFooter,
+    BackToTop,
   ],
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,

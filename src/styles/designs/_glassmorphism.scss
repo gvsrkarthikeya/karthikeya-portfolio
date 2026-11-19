@@ -48,8 +48,9 @@
     background: var(--glass-field) fixed;
   }
 
+  // More opaque than the cards so content passing under the sticky header stays legible.
   .site-header {
-    background-color: var(--color-surface);
+    background-color: color-mix(in srgb, var(--glass-solid) 82%, transparent);
   }
 
   .style-selector__menu {
