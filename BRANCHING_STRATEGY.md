@@ -5,7 +5,8 @@ This repository uses GitHub Flow.
 ## Permanent branch
 
 - `main` is the deployable branch.
-- `main` accepts changes only through reviewed pull requests.
+- `main` accepts changes only through pull requests.
+- `gvsrkarthikeya` is the sole code owner and approver for all repository files.
 - `main` must have a successful CI build and test run before merging.
 
 ## Working branches
@@ -24,7 +25,7 @@ Branch names use lowercase words separated by hyphens.
 1. Update local `main` and create a short-lived branch.
 2. Make small commits and run `npm test -- --watch=false` plus `npm run build` before opening a pull request.
 3. Open a pull request into `main`.
-4. CI must pass and the changes must receive approval before merging.
+4. CI must pass and `@gvsrkarthikeya` must approve it before merging.
 5. Merge with squash merge; delete the source branch afterward.
 
 ## Commits
