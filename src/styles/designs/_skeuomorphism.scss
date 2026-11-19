@@ -1,0 +1,145 @@
+// Skeuomorphism: restrained paper, folder and keycap cues on flat, readable surfaces.
+[data-design='skeuomorphism'][data-bs-theme='light'] {
+  --color-bg: #efe6d6;
+  --color-surface: #fbf7ee;
+  --color-surface-raised: #f1e2bb;
+  --color-text: #2e2418;
+  --color-text-muted: #5c4e3d;
+  --color-primary: #0f5c63;
+  --color-on-primary: #fff;
+  --color-accent: #0a3f45;
+  --color-border: #cbb994;
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 80%) inset, 0 2px 4px rgb(70 50 20 / 22%);
+  --shadow-control: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 2px 3px rgb(70 50 20 / 30%);
+  --radius-card: 0.5rem;
+  --radius-control: 0.5rem;
+  --font-heading: Georgia, 'Times New Roman', serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #0f5c63;
+  --sk-margin: #c4503f;
+  --sk-key-top: #1a7a83;
+  --sk-key-bottom: #0f5c63;
+  --sk-tab: #e4d19d;
+}
+
+[data-design='skeuomorphism'][data-bs-theme='dark'] {
+  --color-bg: #2b2420;
+  --color-surface: #382f29;
+  --color-surface-raised: #453a32;
+  --color-text: #f3ebdd;
+  --color-text-muted: #c2b5a1;
+  --color-primary: #6fd0d6;
+  --color-on-primary: #0b2c30;
+  --color-accent: #a5e6ea;
+  --color-border: #5a4c40;
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 8%) inset, 0 2px 5px rgb(0 0 0 / 45%);
+  --shadow-control: 0 1px 0 rgb(255 255 255 / 25%) inset, 0 2px 3px rgb(0 0 0 / 50%);
+  --radius-card: 0.5rem;
+  --radius-control: 0.5rem;
+  --font-heading: Georgia, 'Times New Roman', serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #a5e6ea;
+  --sk-margin: #d97866;
+  --sk-key-top: #8adce1;
+  --sk-key-bottom: #5ac2c9;
+  --sk-tab: #4f4237;
+}
+
+[data-design='skeuomorphism'][data-bs-theme] {
+  // Experience reads as a notebook sheet with a margin line and pinned entries.
+  .experience {
+    padding: 1.25rem 1.25rem 1.25rem 2.25rem;
+    background-color: var(--color-surface);
+    background-image: linear-gradient(
+      90deg,
+      transparent 1.6rem,
+      var(--sk-margin) 1.6rem,
+      var(--sk-margin) calc(1.6rem + 2px),
+      transparent calc(1.6rem + 2px)
+    );
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .experience__item {
+    border-left: 0;
+    margin-left: 0;
+
+    &::before {
+      top: 0.4rem;
+      left: calc(-1.025rem + 1px);
+      background: radial-gradient(circle at 35% 30%, #fff 0, var(--color-primary) 55%);
+      box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+    }
+  }
+
+  // Project cards are folders with a tab.
+  .projects__card {
+    position: relative;
+    margin-top: 0.85rem;
+    background-color: var(--color-surface-raised);
+    border-top-left-radius: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -0.85rem;
+      left: -1px;
+      width: 38%;
+      max-width: 8rem;
+      height: 0.85rem;
+      background-color: var(--sk-tab);
+      border: 1px solid var(--color-border);
+      border-bottom: 0;
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+  }
+
+  .projects__tag {
+    background-color: var(--color-surface);
+  }
+
+  .about__fact,
+  .skills__group,
+  .education__cert,
+  .education__degree {
+    border-top-color: rgb(255 255 255 / 60%);
+  }
+
+  // Solid actions are keycaps: gentle gradient, inset highlight, pressed on click.
+  .hero__cta--solid,
+  .contact__resume {
+    background-image: linear-gradient(180deg, var(--sk-key-top), var(--sk-key-bottom));
+    transition:
+      box-shadow 100ms ease-out,
+      transform 100ms ease-out;
+
+    &:hover,
+    &:focus-visible {
+      background-image: none;
+    }
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: inset 0 2px 4px rgb(0 0 0 / 35%);
+    }
+  }
+
+  .style-selector__menu {
+    background-color: var(--color-surface);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-design='skeuomorphism'][data-bs-theme] {
+    .hero__cta--solid,
+    .contact__resume {
+      transition: none;
+
+      &:active {
+        transform: none;
+      }
+    }
+  }
+}
