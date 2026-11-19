@@ -105,11 +105,6 @@
     border-color: var(--color-border);
   }
 
-  // Bordered links must align with the content edge instead of the text edge.
-  .social-links {
-    margin-left: 0;
-  }
-
   .hero__initials {
     border: var(--nb-border);
     box-shadow: var(--shadow-control);
