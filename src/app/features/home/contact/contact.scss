@@ -1,0 +1,19 @@
+.contact__resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  color: var(--app-accent-contrast);
+  text-decoration: none;
+  background-color: var(--app-accent);
+  border: 1px solid var(--app-accent);
+  border-radius: var(--bs-border-radius);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--app-accent-contrast);
+    background-color: var(--app-accent-hover);
+    border-color: var(--app-accent-hover);
+  }
+}

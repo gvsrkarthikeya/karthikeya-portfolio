@@ -5,19 +5,15 @@ describe('SiteFooter', () => {
   async function render(): Promise<HTMLElement> {
     const fixture = TestBed.createComponent(SiteFooter);
     fixture.componentRef.setInput('ownerName', 'GVSR Karthikeya');
-    fixture.componentRef.setInput('links', [
-      { kind: 'email', label: 'Email', url: 'mailto:someone@example.com' },
-    ]);
     await fixture.whenStable();
     return fixture.nativeElement as HTMLElement;
   }
 
-  it('renders the social links inside the footer', async () => {
+  it('does not repeat the contact links', async () => {
     const element = await render();
 
-    expect(element.querySelector('footer app-social-links a')?.getAttribute('href')).toBe(
-      'mailto:someone@example.com',
-    );
+    expect(element.querySelector('footer a')).toBeNull();
+    expect(element.querySelector('footer app-social-links')).toBeNull();
   });
 
   it('shows a copyright line with the current year and owner name', async () => {

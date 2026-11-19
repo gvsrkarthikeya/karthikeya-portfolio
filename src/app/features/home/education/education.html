@@ -1,0 +1,36 @@
+<section id="education" class="section py-5" aria-labelledby="education-heading">
+  <h2 id="education-heading" class="h3 fw-bold mb-4">Education</h2>
+  <div class="row g-3">
+    @for (entry of entries(); track entry.degree) {
+      <div class="col-12 col-md-6">
+        <div class="education__degree h-100 p-3">
+          <h3 class="h5 mb-1">{{ entry.degree }}</h3>
+          <p class="mb-1">{{ entry.institution }}</p>
+          <p class="text-body-secondary small mb-0">
+            {{ entry.startYear }} – {{ entry.endYear }}
+            @if (entry.grade) {
+              · {{ entry.grade }}
+            }
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (certifications().length) {
+    <h3 id="certifications-heading" class="h5 fw-bold mt-5 mb-3">Certifications</h3>
+    <ul class="list-unstyled d-grid gap-2 mb-0" aria-labelledby="certifications-heading">
+      @for (cert of certifications(); track cert.title) {
+        <li class="education__cert p-3">
+          <span class="fw-semibold">{{ cert.title }}</span>
+          <span class="d-block text-body-secondary small">
+            {{ cert.issuer }}
+            @if (cert.note) {
+              · {{ cert.note }}
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  }
+</section>
