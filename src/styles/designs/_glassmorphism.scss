@@ -1,0 +1,90 @@
+// Glassmorphism: translucent, blurred surfaces over a colour field.
+[data-design='glassmorphism'][data-bs-theme='light'] {
+  --color-bg: #dbe6ff;
+  --color-surface: rgb(255 255 255 / 62%);
+  --color-surface-raised: rgb(255 255 255 / 72%);
+  --color-text: #101a33;
+  --color-text-muted: #3b4766;
+  --color-primary: #0b5fa5;
+  --color-on-primary: #fff;
+  --color-accent: #084a82;
+  --color-border: rgb(255 255 255 / 70%);
+  --shadow-card: 0 8px 28px rgb(31 45 100 / 16%);
+  --shadow-control: 0 2px 8px rgb(31 45 100 / 16%);
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #0b5fa5;
+  --glass-field: linear-gradient(135deg, #cfe3ff 0%, #e3d4ff 50%, #c9f0ee 100%);
+  --glass-blur: blur(16px) saturate(140%);
+  --glass-solid: #f1f5ff;
+}
+
+[data-design='glassmorphism'][data-bs-theme='dark'] {
+  --color-bg: #0b1230;
+  --color-surface: rgb(20 28 60 / 62%);
+  --color-surface-raised: rgb(34 44 88 / 66%);
+  --color-text: #eef2ff;
+  --color-text-muted: #b6bfdc;
+  --color-primary: #7cc4ff;
+  --color-on-primary: #04223d;
+  --color-accent: #b5deff;
+  --color-border: rgb(255 255 255 / 16%);
+  --shadow-card: 0 8px 28px rgb(0 0 0 / 40%);
+  --shadow-control: 0 2px 8px rgb(0 0 0 / 40%);
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #7cc4ff;
+  --glass-field: linear-gradient(135deg, #0b1230 0%, #2a1550 50%, #0b2a3a 100%);
+  --glass-blur: blur(16px) saturate(140%);
+  --glass-solid: #151c3c;
+}
+
+[data-design='glassmorphism'][data-bs-theme] {
+  body {
+    background: var(--glass-field) fixed;
+  }
+
+  .site-header {
+    background-color: var(--color-surface);
+  }
+
+  .style-selector__menu {
+    background-color: var(--color-surface-raised);
+  }
+
+  // Cards pick up a hairline border so the glass edge reads on any backdrop.
+  .about__fact,
+  .skills__group,
+  .projects__card,
+  .education__cert,
+  .education__degree {
+    border: 1px solid var(--color-border);
+  }
+
+  .site-header,
+  .style-selector__menu,
+  .about__fact,
+  .skills__group,
+  .projects__card,
+  .education__cert,
+  .education__degree {
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .site-header,
+    .style-selector__menu,
+    .about__fact,
+    .skills__group,
+    .projects__card,
+    .education__cert,
+    .education__degree {
+      background-color: var(--glass-solid);
+    }
+  }
+}
