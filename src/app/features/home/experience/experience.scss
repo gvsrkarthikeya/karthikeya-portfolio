@@ -1,0 +1,22 @@
+.experience__item {
+  position: relative;
+  margin-left: 0.4rem;
+  padding-left: 1.25rem;
+  padding-bottom: 1.75rem;
+  border-left: 2px solid var(--app-accent-border);
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0.45rem;
+    left: -0.4rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: var(--app-accent);
+  }
+}

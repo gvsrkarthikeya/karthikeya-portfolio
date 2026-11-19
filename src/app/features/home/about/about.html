@@ -1,0 +1,13 @@
+<section id="about" class="section py-5" aria-labelledby="about-heading">
+  <h2 id="about-heading" class="h3 fw-bold mb-4">About</h2>
+  <dl class="about__facts row g-3 mb-0">
+    @for (fact of facts(); track fact.label) {
+      <div class="col-12 col-md-6">
+        <div class="about__fact h-100 p-3">
+          <dt class="small text-uppercase text-body-secondary">{{ fact.label }}</dt>
+          <dd class="mb-0 fw-semibold">{{ fact.value }}</dd>
+        </div>
+      </div>
+    }
+  </dl>
+</section>

@@ -2,5 +2,8 @@
 <app-site-header [brand]="profile.displayName" [navItems]="navItems" />
 <main id="main-content" class="app-shell container" tabindex="-1">
   <app-hero [profile]="profile" />
+  <app-about [experience]="experience" [skillGroups]="skillGroups" />
+  <app-experience [entries]="experience" />
+  <app-skills [groups]="skillGroups" />
 </main>
 <app-site-footer [ownerName]="profile.displayName" [links]="profile.socialLinks" />

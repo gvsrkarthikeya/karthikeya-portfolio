@@ -29,12 +29,12 @@ completed; do not mark a task complete without testing it.
 
 ## Phase 3 --- Shared UI and content
 
--   [ ] Header
--   [ ] Footer
--   [ ] Hero
--   [ ] About
--   [ ] Experience
--   [ ] Skills
+-   [x] Header
+-   [x] Footer
+-   [x] Hero
+-   [x] About
+-   [x] Experience
+-   [x] Skills
 -   [ ] Projects
 -   [ ] Education
 -   [ ] Contact
