@@ -2,6 +2,9 @@
   <div class="container">
     <div class="navbar navbar-expand-lg px-0">
       <a class="navbar-brand fw-semibold" href="#home">{{ brand() }}</a>
+      <div class="site-header__action">
+        <ng-content select="[headerAction]" />
+      </div>
       <button
         type="button"
         class="navbar-toggler site-header__toggle"

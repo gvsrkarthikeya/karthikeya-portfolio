@@ -4,7 +4,11 @@
     [style]="appearance.designStyle()"
     (changed)="appearance.setDesignStyle($event)"
   />
-  <app-theme-toggle [theme]="appearance.colorTheme()" (toggled)="appearance.toggleColorTheme()" />
+  <app-theme-toggle
+    headerAction
+    [theme]="appearance.colorTheme()"
+    (toggled)="appearance.toggleColorTheme()"
+  />
 </app-site-header>
 <main id="main-content" class="app-shell container" tabindex="-1">
   <app-hero [profile]="profile" />
