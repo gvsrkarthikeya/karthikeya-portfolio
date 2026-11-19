@@ -82,7 +82,7 @@ completed; do not mark a task complete without testing it.
 -   [x] Configure base href
 -   [x] Add Actions workflow
 -   [x] Configure Pages
--   [ ] Verify public deployment
+-   [x] Verify public deployment
 -   [x] Update README with live URL
 
 ## Current checkpoint
