@@ -8,7 +8,7 @@ describe('SiteHeader', () => {
   beforeEach(async () => {
     fixture = TestBed.createComponent(SiteHeader);
     fixture.componentRef.setInput('brand', 'GVSR Karthikeya');
-    fixture.componentRef.setInput('navItems', [{ label: 'Home', fragment: 'home' }]);
+    fixture.componentRef.setInput('navItems', [{ label: 'About', fragment: 'about' }]);
     await fixture.whenStable();
     element = fixture.nativeElement as HTMLElement;
   });
@@ -28,8 +28,17 @@ describe('SiteHeader', () => {
   it('renders section navigation with fragment links', () => {
     const link = element.querySelector('nav[aria-label="Primary"] a');
 
-    expect(link?.getAttribute('href')).toBe('#home');
-    expect(link?.textContent?.trim()).toBe('Home');
+    expect(link?.getAttribute('href')).toBe('#about');
+    expect(link?.textContent?.trim()).toBe('About');
+  });
+
+  it('links the brand to the home section', () => {
+    expect(element.querySelector('a.navbar-brand')?.getAttribute('href')).toBe('#home');
+  });
+
+  it('keeps the inline menu for large screens only', () => {
+    expect(element.querySelector('.navbar')?.classList).toContain('navbar-expand-lg');
+    expect(element.querySelector('.navbar')?.classList).not.toContain('navbar-expand-md');
   });
 
   it('starts with the mobile menu collapsed', () => {

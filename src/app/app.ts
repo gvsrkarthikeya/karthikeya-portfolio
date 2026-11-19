@@ -29,7 +29,6 @@ export class App {
 
   /** Add an entry here as each section ships. */
   protected readonly navItems: NavItem[] = [
-    { label: 'Home', fragment: 'home' },
     { label: 'About', fragment: 'about' },
     { label: 'Experience', fragment: 'experience' },
     { label: 'Skills', fragment: 'skills' },
