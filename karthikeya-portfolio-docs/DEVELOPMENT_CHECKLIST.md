@@ -55,7 +55,7 @@ completed; do not mark a task complete without testing it.
 -   [x] Glassmorphism
 -   [x] Neumorphism
 -   [x] Neubrutalism
--   [ ] Skeuomorphism
+-   [x] Skeuomorphism
 -   [ ] Bento Grid
 -   [ ] Verify all 16 combinations
 
