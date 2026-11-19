@@ -99,7 +99,9 @@ the assistant must ask whether to update these too:
 
 ## Current checkpoint
 
-Phases 1 and 2 are complete: the Angular app runs locally with
-Bootstrap, the folder structure and typed models are in place, and CI
-validates tests and the production build on every pull request. Next
-up is Phase 3, starting with the header, footer and hero.
+Phases 1 to 5 are complete: all sections, the appearance engine and
+all 8 design styles (verified in 16 style and theme combinations) are
+built, the header is sticky on desktop with a back-to-top button, and
+the site is live at https://gvsrkarthikeya.github.io/karthikeya-portfolio/
+via GitHub Pages. Next up is Phase 6 (portrait, avatar and content) and
+Phase 7 (quality checks).
