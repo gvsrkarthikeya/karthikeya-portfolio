@@ -1,3 +1,17 @@
 .site-header {
   background-color: var(--bs-body-bg);
 }
+
+@media (min-width: 992px) {
+  .site-header .navbar-nav {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .site-header .nav-link {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+  }
+}
