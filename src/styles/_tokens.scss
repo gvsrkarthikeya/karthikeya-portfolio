@@ -1,0 +1,26 @@
+// Maps the design tokens (defined per style in styles/designs) onto the
+// page and Bootstrap's variables, so every style drives the same markup.
+[data-design][data-bs-theme] {
+  --bs-body-bg: var(--color-bg);
+  --bs-body-color: var(--color-text);
+  --bs-emphasis-color: var(--color-text);
+  --bs-secondary-color: var(--color-text-muted);
+  --bs-border-color: var(--color-border);
+  --bs-body-font-family: var(--font-body);
+  --bs-border-radius: var(--radius-control);
+  --bs-border-radius-lg: var(--radius-card);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
