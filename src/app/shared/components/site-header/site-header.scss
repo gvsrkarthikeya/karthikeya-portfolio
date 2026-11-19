@@ -48,3 +48,14 @@
     margin-right: 0;
   }
 }
+
+.site-header .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.site-header__toggle {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
