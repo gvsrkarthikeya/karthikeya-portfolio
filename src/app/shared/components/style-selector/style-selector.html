@@ -1,0 +1,6 @@
+<label class="visually-hidden" for="design-style">Design style</label>
+<select id="design-style" class="form-select style-selector" (change)="onChange($event)">
+  @for (option of options; track option.value) {
+    <option [value]="option.value" [selected]="option.value === style()">{{ option.label }}</option>
+  }
+</select>
