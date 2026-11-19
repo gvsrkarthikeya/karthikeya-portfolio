@@ -1,0 +1,33 @@
+<header class="site-header border-bottom">
+  <div class="container">
+    <div class="navbar navbar-expand-md px-0">
+      <a class="navbar-brand fw-semibold" href="#home">{{ brand() }}</a>
+      <button
+        type="button"
+        class="navbar-toggler site-header__toggle"
+        aria-controls="primary-menu"
+        [attr.aria-expanded]="menuOpen()"
+        aria-label="Toggle navigation"
+        (click)="toggleMenu()"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <nav
+        id="primary-menu"
+        class="collapse navbar-collapse justify-content-md-end"
+        [class.show]="menuOpen()"
+        aria-label="Primary"
+      >
+        <ul class="navbar-nav">
+          @for (item of navItems(); track item.fragment) {
+            <li class="nav-item">
+              <a class="nav-link" [href]="'#' + item.fragment" (click)="closeMenu()">{{
+                item.label
+              }}</a>
+            </li>
+          }
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>

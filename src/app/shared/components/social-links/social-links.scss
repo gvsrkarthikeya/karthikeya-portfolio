@@ -1,0 +1,35 @@
+.social-links {
+  margin-left: -0.8125rem;
+}
+
+.social-links__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--bs-border-radius);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--app-accent);
+    background-color: var(--app-accent-subtle);
+    border-color: var(--app-accent-border);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .social-links__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

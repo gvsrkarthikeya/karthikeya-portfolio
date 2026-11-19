@@ -1,8 +1,24 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
 .app-shell {
-  min-height: calc(100vh - 65px);
+  flex: 1 0 auto;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1080;
+  padding: 0.5rem 1rem;
+  color: var(--bs-body-bg);
+  background-color: var(--bs-emphasis-color);
+  border-radius: var(--bs-border-radius);
 }

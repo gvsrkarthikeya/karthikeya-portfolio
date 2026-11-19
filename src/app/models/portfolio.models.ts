@@ -33,7 +33,8 @@ export type SkillProficiency = 'beginner' | 'intermediate' | 'advanced';
 
 export interface Skill {
   name: string;
-  proficiency: SkillProficiency;
+  /** Only set when the owner has confirmed the level; never inferred. */
+  proficiency?: SkillProficiency;
 }
 
 export interface SkillGroup {
@@ -43,6 +44,7 @@ export interface SkillGroup {
 
 export interface Project {
   title: string;
+  organization: string;
   description: string;
   contributions: string[];
   technologies: string[];
@@ -53,8 +55,15 @@ export interface Project {
 export interface Education {
   degree: string;
   institution: string;
-  startDate: YearMonth;
-  endDate?: YearMonth;
+  startYear: number;
+  endYear: number;
+  grade?: string;
+}
+
+export interface Certification {
+  title: string;
+  issuer: string;
+  note?: string;
 }
 
 export interface PortfolioContent {
@@ -63,4 +72,5 @@ export interface PortfolioContent {
   skillGroups: SkillGroup[];
   projects: Project[];
   education: Education[];
+  certifications: Certification[];
 }
