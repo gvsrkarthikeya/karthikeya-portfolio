@@ -1,0 +1,38 @@
+// Flat: solid color blocks, crisp edges, no shadows or gradients.
+[data-design='flat'][data-bs-theme='light'] {
+  --color-bg: #fff;
+  --color-surface: #e8f0fe;
+  --color-surface-raised: #d2e3fc;
+  --color-text: #12233f;
+  --color-text-muted: #4a5d7a;
+  --color-primary: #1557b0;
+  --color-on-primary: #fff;
+  --color-accent: #0d3c85;
+  --color-border: transparent;
+  --shadow-card: none;
+  --shadow-control: none;
+  --radius-card: 0;
+  --radius-control: 0;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #12233f;
+}
+
+[data-design='flat'][data-bs-theme='dark'] {
+  --color-bg: #0b1730;
+  --color-surface: #14264a;
+  --color-surface-raised: #1d3668;
+  --color-text: #eaf1ff;
+  --color-text-muted: #a9bad8;
+  --color-primary: #6ea8ff;
+  --color-on-primary: #0b1730;
+  --color-accent: #9ec3ff;
+  --color-border: transparent;
+  --shadow-card: none;
+  --shadow-control: none;
+  --radius-card: 0;
+  --radius-control: 0;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #eaf1ff;
+}
