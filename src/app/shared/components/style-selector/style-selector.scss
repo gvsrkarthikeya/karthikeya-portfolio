@@ -9,16 +9,18 @@
   gap: 0.5rem;
   min-height: 2.75rem;
   white-space: nowrap;
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-control);
 }
 
 .style-selector__menu {
   display: flex;
   flex-direction: column;
   padding: 0.25rem;
-  background-color: var(--bs-body-bg);
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  box-shadow: var(--bs-box-shadow);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
   z-index: 1030;
 }
 
@@ -33,11 +35,11 @@
   white-space: nowrap;
   background: none;
   border: 0;
-  border-radius: var(--bs-border-radius-sm);
+  border-radius: var(--radius-control);
 
   &:hover,
   &:focus-visible {
-    background-color: var(--app-accent-subtle);
+    background-color: var(--color-surface-raised);
   }
 
   &[aria-checked='true'] {

@@ -1,13 +1,6 @@
 @use 'bootstrap/scss/bootstrap';
-
-:root {
-  --app-accent: #111111;
-  --app-accent-hover: #3d3d3d;
-  --app-accent-contrast: #fff;
-  --app-accent-subtle: #f1f3f5;
-  --app-accent-border: #ced4da;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
+@use 'styles/tokens';
+@use 'styles/designs/minimalism';
 
 body {
   margin: 0;
@@ -22,12 +15,4 @@ html {
   html {
     scroll-behavior: auto;
   }
-}
-
-[data-bs-theme='dark'] {
-  --app-accent: #f8f9fa;
-  --app-accent-hover: #ced4da;
-  --app-accent-contrast: #111111;
-  --app-accent-subtle: #2b3035;
-  --app-accent-border: #495057;
 }
