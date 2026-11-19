@@ -53,7 +53,7 @@ completed; do not mark a task complete without testing it.
 -   [x] Flat Design
 -   [x] Material Design
 -   [x] Glassmorphism
--   [ ] Neumorphism
+-   [x] Neumorphism
 -   [ ] Neubrutalism
 -   [ ] Skeuomorphism
 -   [ ] Bento Grid
