@@ -1,0 +1,77 @@
+// Material: layered surfaces with a consistent elevation scale and deliberate feedback.
+[data-design='material'][data-bs-theme='light'] {
+  --color-bg: #f6f5fa;
+  --color-surface: #fff;
+  --color-surface-raised: #ece9f8;
+  --color-text: #1d1b26;
+  --color-text-muted: #5a566b;
+  --color-primary: #5b4bc4;
+  --color-on-primary: #fff;
+  --color-accent: #4535a8;
+  --color-border: transparent;
+  --shadow-card: 0 1px 2px rgb(29 27 38 / 14%), 0 2px 6px rgb(29 27 38 / 10%);
+  --shadow-control: 0 1px 2px rgb(29 27 38 / 20%);
+  --shadow-hover: 0 3px 8px rgb(29 27 38 / 22%), 0 8px 20px rgb(29 27 38 / 14%);
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #5b4bc4;
+}
+
+[data-design='material'][data-bs-theme='dark'] {
+  --color-bg: #121118;
+  --color-surface: #1e1c28;
+  --color-surface-raised: #2a2738;
+  --color-text: #e8e6f2;
+  --color-text-muted: #a9a5bd;
+  --color-primary: #b7a9ff;
+  --color-on-primary: #1d1550;
+  --color-accent: #d3caff;
+  --color-border: transparent;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 50%), 0 2px 6px rgb(0 0 0 / 40%);
+  --shadow-control: 0 1px 2px rgb(0 0 0 / 55%);
+  --shadow-hover: 0 3px 8px rgb(0 0 0 / 60%), 0 8px 20px rgb(0 0 0 / 45%);
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+  --font-heading: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --focus-ring: 3px solid #b7a9ff;
+}
+
+// Interaction feedback: controls lift on hover and keyboard focus.
+[data-design='material'][data-bs-theme] {
+  .hero__cta,
+  .contact__resume,
+  .theme-toggle,
+  .style-selector__trigger,
+  .social-links__link {
+    transition: box-shadow 150ms ease-out;
+
+    &:hover,
+    &:focus-visible {
+      box-shadow: var(--shadow-hover);
+    }
+  }
+
+  .style-selector__menu {
+    box-shadow: var(--shadow-hover);
+  }
+
+  .style-selector__item {
+    transition: background-color 150ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-design='material'][data-bs-theme] {
+    .hero__cta,
+    .contact__resume,
+    .theme-toggle,
+    .style-selector__trigger,
+    .social-links__link,
+    .style-selector__item {
+      transition: none;
+    }
+  }
+}
