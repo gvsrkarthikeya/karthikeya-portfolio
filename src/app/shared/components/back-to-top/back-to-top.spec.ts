@@ -64,6 +64,16 @@ describe('BackToTop', () => {
     expect(scrollToSpy).toHaveBeenCalledWith({ top: 0 });
   });
 
+  it('clears the section hash so the URL returns to the page root', async () => {
+    window.history.replaceState(null, '', '/#contact');
+    await scrollPage(1000);
+
+    button()!.click();
+
+    expect(window.location.hash).toBe('');
+    expect(window.location.pathname).toBe('/');
+  });
+
   it('stops listening once destroyed', async () => {
     const removeSpy = vi.spyOn(window, 'removeEventListener');
 

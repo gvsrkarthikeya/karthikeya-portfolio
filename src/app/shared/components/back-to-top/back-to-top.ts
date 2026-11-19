@@ -30,6 +30,7 @@ export class BackToTop {
   protected scrollToTop(): void {
     // Smoothness comes from the global scroll-behavior rule, which honours reduced motion.
     window.scrollTo({ top: 0 });
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
     document.getElementById('home')?.focus({ preventScroll: true });
   }
 }
