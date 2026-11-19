@@ -56,7 +56,7 @@ completed; do not mark a task complete without testing it.
 -   [x] Neumorphism
 -   [x] Neubrutalism
 -   [x] Skeuomorphism
--   [ ] Bento Grid
+-   [x] Bento Grid
 -   [ ] Verify all 16 combinations
 
 ## Phase 6 --- Assets and content
