@@ -79,11 +79,11 @@ completed; do not mark a task complete without testing it.
 ## Phase 8 --- Deployment
 
 -   [x] Create GitHub repository
--   [ ] Configure base href
--   [ ] Add Actions workflow
--   [ ] Configure Pages
+-   [x] Configure base href
+-   [x] Add Actions workflow
+-   [x] Configure Pages
 -   [ ] Verify public deployment
--   [ ] Update README with live URL
+-   [x] Update README with live URL
 
 ## Current checkpoint
 
