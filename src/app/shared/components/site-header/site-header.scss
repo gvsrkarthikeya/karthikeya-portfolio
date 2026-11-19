@@ -15,3 +15,21 @@
     align-items: center;
   }
 }
+
+.site-header__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 992px) {
+  .site-header__controls {
+    margin-left: 1rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .site-header__controls {
+    padding: 0.5rem 0 1rem;
+  }
+}

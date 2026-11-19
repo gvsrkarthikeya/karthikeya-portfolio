@@ -1,5 +1,11 @@
 <a class="skip-link visually-hidden-focusable" href="#main-content">Skip to main content</a>
-<app-site-header [brand]="profile.displayName" [navItems]="navItems" />
+<app-site-header [brand]="profile.displayName" [navItems]="navItems">
+  <app-style-selector
+    [style]="appearance.designStyle()"
+    (changed)="appearance.setDesignStyle($event)"
+  />
+  <app-theme-toggle [theme]="appearance.colorTheme()" (toggled)="appearance.toggleColorTheme()" />
+</app-site-header>
 <main id="main-content" class="app-shell container" tabindex="-1">
   <app-hero [profile]="profile" />
   <app-about [experience]="experience" [skillGroups]="skillGroups" />

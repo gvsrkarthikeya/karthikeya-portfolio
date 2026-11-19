@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
 import { SiteHeader } from './site-header';
 
 describe('SiteHeader', () => {
@@ -67,5 +68,20 @@ describe('SiteHeader', () => {
     await fixture.whenStable();
 
     expect(toggle().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('projects appearance controls inside the collapsible menu', () => {
+    @Component({
+      imports: [SiteHeader],
+      template: `<app-site-header brand="X" [navItems]="[]"
+        ><button id="ctl">c</button></app-site-header
+      >`,
+    })
+    class Host {}
+
+    const host = TestBed.createComponent(Host);
+    const control = (host.nativeElement as HTMLElement).querySelector('#ctl');
+
+    expect(control?.closest('#primary-menu')).not.toBeNull();
   });
 });

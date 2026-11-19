@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AppearanceService } from './core/services/appearance.service';
 import { PortfolioDataService } from './core/services/portfolio-data.service';
 import { About } from './features/home/about/about';
 import { Contact } from './features/home/contact/contact';
@@ -9,16 +10,31 @@ import { Projects } from './features/home/projects/projects';
 import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
 import { SiteFooter } from './shared/components/site-footer/site-footer';
+import { StyleSelector } from './shared/components/style-selector/style-selector';
+import { ThemeToggle } from './shared/components/theme-toggle/theme-toggle';
 import { SiteHeader } from './shared/components/site-header/site-header';
 
 @Component({
-  imports: [SiteHeader, Hero, About, Experience, Skills, Projects, Education, Contact, SiteFooter],
+  imports: [
+    SiteHeader,
+    StyleSelector,
+    ThemeToggle,
+    Hero,
+    About,
+    Experience,
+    Skills,
+    Projects,
+    Education,
+    Contact,
+    SiteFooter,
+  ],
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
 export class App {
+  protected readonly appearance = inject(AppearanceService);
   private readonly content = inject(PortfolioDataService).content;
   protected readonly profile = this.content.profile;
   protected readonly experience = this.content.experience;

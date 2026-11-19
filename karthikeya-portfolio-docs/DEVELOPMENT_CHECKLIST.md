@@ -41,11 +41,11 @@ completed; do not mark a task complete without testing it.
 
 ## Phase 4 --- Appearance engine
 
--   [ ] Appearance service
--   [ ] Style selector
--   [ ] Theme toggle
--   [ ] localStorage persistence
--   [ ] Invalid storage fallback
+-   [x] Appearance service
+-   [x] Style selector
+-   [x] Theme toggle
+-   [x] localStorage persistence
+-   [x] Invalid storage fallback
 
 ## Phase 5 --- Design systems
 
