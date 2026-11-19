@@ -1,12 +1,6 @@
-<header class="border-bottom">
-  <div class="container py-3">
-    <span class="fw-semibold">Portfolio</span>
-  </div>
-</header>
-
-<main class="app-shell container py-5">
-  <h1 class="mb-3">Portfolio foundation</h1>
-  <p class="text-secondary">Bootstrap and the application structure are ready.</p>
+<a class="skip-link visually-hidden-focusable" href="#main-content">Skip to main content</a>
+<app-site-header [brand]="profile.displayName" [navItems]="navItems" />
+<main id="main-content" class="app-shell container" tabindex="-1">
+  <app-hero [profile]="profile" />
 </main>
-
-<router-outlet />
+<app-site-footer [ownerName]="profile.displayName" [links]="profile.socialLinks" />
