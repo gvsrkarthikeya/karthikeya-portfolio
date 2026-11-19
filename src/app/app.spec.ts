@@ -58,7 +58,6 @@ describe('App', () => {
     );
 
     expect(hrefs).toEqual([
-      '#home',
       '#about',
       '#experience',
       '#skills',
