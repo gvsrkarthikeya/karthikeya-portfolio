@@ -24,7 +24,7 @@ completed; do not mark a task complete without testing it.
 
 -   [x] Install Bootstrap
 -   [x] Create folder structure
--   [ ] Create models
+-   [x] Create models
 -   [x] Build application shell
 
 ## Phase 3 --- Shared UI and content
@@ -78,7 +78,7 @@ completed; do not mark a task complete without testing it.
 
 ## Phase 8 --- Deployment
 
--   [ ] Create GitHub repository
+-   [x] Create GitHub repository
 -   [ ] Configure base href
 -   [ ] Add Actions workflow
 -   [ ] Configure Pages
@@ -87,5 +87,7 @@ completed; do not mark a task complete without testing it.
 
 ## Current checkpoint
 
-Documentation package prepared; environment and Angular implementation
-have not yet been verified.
+Phases 1 and 2 are complete: the Angular app runs locally with
+Bootstrap, the folder structure and typed models are in place, and CI
+validates tests and the production build on every pull request. Next
+up is Phase 3, starting with the header, footer and hero.
