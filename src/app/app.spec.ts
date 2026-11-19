@@ -35,4 +35,20 @@ describe('App', () => {
       'resume/Karthikeya_Resume.pdf',
     );
   });
+
+  it('renders the about, experience and skills sections in order', async () => {
+    const element = await render();
+    const ids = Array.from(element.querySelectorAll('main section')).map((s) => s.id);
+
+    expect(ids).toEqual(['home', 'about', 'experience', 'skills']);
+  });
+
+  it('links each section from the header navigation', async () => {
+    const element = await render();
+    const hrefs = Array.from(element.querySelectorAll('nav[aria-label="Primary"] a')).map((a) =>
+      a.getAttribute('href'),
+    );
+
+    expect(hrefs).toEqual(['#home', '#about', '#experience', '#skills']);
+  });
 });

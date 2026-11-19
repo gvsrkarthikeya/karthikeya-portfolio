@@ -1,0 +1,16 @@
+<section id="experience" class="section py-5" aria-labelledby="experience-heading">
+  <h2 id="experience-heading" class="h3 fw-bold mb-4">Experience</h2>
+  <ol class="experience list-unstyled mb-0">
+    @for (entry of entries(); track entry.company + entry.startDate) {
+      <li class="experience__item">
+        <h3 class="h5 mb-1">{{ entry.role }} · {{ entry.company }}</h3>
+        <p class="experience__dates text-body-secondary small mb-2">{{ dateRange(entry) }}</p>
+        <ul class="mb-0 ps-3">
+          @for (point of entry.contributions; track point) {
+            <li>{{ point }}</li>
+          }
+        </ul>
+      </li>
+    }
+  </ol>
+</section>
