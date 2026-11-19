@@ -28,7 +28,8 @@ Focus/hover/active/disabled states
 
 ## Responsive viewports
 
-At minimum: 360px, 390px, 768px, 1024px and 1440px.
+At minimum: 320px, 375px, 768px, 1024px and 1440px. At every width
+check for horizontal scrolling and 44x44px touch targets.
 
 ## Accessibility checks
 

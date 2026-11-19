@@ -70,7 +70,7 @@ completed; do not mark a task complete without testing it.
 
 ## Phase 7 --- Quality
 
--   [ ] Responsive checks
+-   [ ] Responsive checks (mobile first: 320px upward, no horizontal scroll)
 -   [ ] Accessibility checks
 -   [ ] Image optimization
 -   [ ] Unit tests

@@ -46,7 +46,14 @@ first release. Use Angular routing only where it adds clear value.
 
 ## 5. Non-functional requirements
 
--   Responsive at common mobile, tablet and desktop widths.
+-   Fully usable on mobile, from 320px phone widths up, in every style
+    and theme; also responsive at tablet and desktop widths:
+    -   No horizontal scrolling.
+    -   Text readable without zooming.
+    -   Touch targets of at least 44x44px.
+    -   Navigation and the style/theme controls work by touch.
+    -   Content, header and footer share one left edge.
+    -   A viewport meta tag is set.
 -   Keyboard operable; visible focus indicators.
 -   Adequate contrast in every style/theme combination.
 -   Avoid motion that causes discomfort; respect
