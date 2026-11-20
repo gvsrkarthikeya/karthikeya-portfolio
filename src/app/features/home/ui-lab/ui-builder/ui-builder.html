@@ -1,32 +1,25 @@
 <div class="lab__panel p-3 ub">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h3 class="h6 text-uppercase text-body-secondary mb-0">UI builder</h3>
-    <div class="d-flex gap-2">
-      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="reset()">
-        Reset
-      </button>
-      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="clear()">
-        Clear
-      </button>
-    </div>
   </div>
   <p class="small text-body-secondary">
-    Add blocks, drag to reorder (or use the arrows), edit their text, then copy the HTML and CSS.
+    Add components (click or drag), nest them inside containers, edit their properties, then copy
+    the HTML and CSS.
   </p>
 
   <div class="row g-3">
     <div class="col-12 col-lg-4">
-      <h4 class="h6">Blocks</h4>
+      <h4 class="h6">Components</h4>
       <ul class="ub__palette list-unstyled">
-        @for (def of defs; track def.type) {
+        @for (def of palette; track def.type) {
           <li>
             <button
               type="button"
               class="ub__chip"
               draggable="true"
-              [attr.aria-label]="'Add ' + def.label + ' block'"
-              (click)="add(def.type)"
-              (dragstart)="dragNew($event, def.type)"
+              [attr.aria-label]="'Add ' + def.label"
+              (click)="add({ kind: 'new', type: def.type })"
+              (dragstart)="dragNew($event, { kind: 'new', type: def.type })"
               (dragend)="dragEnd()"
             >
               <span aria-hidden="true">{{ def.icon }}</span> {{ def.label }}
@@ -35,119 +28,61 @@
         }
       </ul>
 
-      <h4 class="h6 mt-3">Properties</h4>
-      @if (selected(); as block) {
-        @if (selectedDef(); as def) {
-          <div class="ub__props">
-            <p class="small text-body-secondary mb-2">Editing: {{ def.label }}</p>
-            @for (field of def.fields; track field) {
-              <label class="form-label small mb-0" [for]="'ub-' + field">{{
-                def.fieldLabels[field]
-              }}</label>
-              <input
-                class="form-control form-control-sm mb-2"
-                type="text"
-                [id]="'ub-' + field"
-                [value]="block[field]"
-                (input)="edit(field, $event)"
-              />
-            }
-            @if (def.hasTone) {
-              <fieldset class="mb-0">
-                <legend class="form-label small mb-1">Tone</legend>
-                <div class="btn-group btn-group-sm" role="group" aria-label="Tone">
-                  @for (tone of ['primary', 'neutral']; track tone) {
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary"
-                      [class.active]="block.tone === tone"
-                      [attr.aria-pressed]="block.tone === tone"
-                      (click)="setTone($any(tone))"
-                    >
-                      {{ tone }}
-                    </button>
-                  }
-                </div>
-              </fieldset>
-            }
-          </div>
+      <h4 class="h6 mt-3">Presets</h4>
+      <ul class="ub__palette list-unstyled">
+        @for (preset of presets; track preset.id) {
+          <li>
+            <button
+              type="button"
+              class="ub__chip"
+              draggable="true"
+              [attr.aria-label]="'Add ' + preset.label"
+              (click)="add({ kind: 'preset', id: preset.id })"
+              (dragstart)="dragNew($event, { kind: 'preset', id: preset.id })"
+              (dragend)="dragEnd()"
+            >
+              {{ preset.label }}
+            </button>
+          </li>
         }
+      </ul>
+
+      <h4 class="h6 mt-3">Properties</h4>
+      @if (selected()) {
+        <div class="ub__props">
+          <p class="small text-body-secondary mb-2">Editing: {{ selectedLabel() }}</p>
+        </div>
       } @else {
-        <p class="small text-body-secondary">Select a block on the canvas to edit it.</p>
+        <p class="small text-body-secondary">Select a component on the canvas to edit it.</p>
       }
     </div>
 
     <div class="col-12 col-lg-8">
       <h4 class="h6">Canvas</h4>
-      <div
-        class="ub__canvas"
-        role="group"
-        aria-label="Page canvas"
-        (dragover)="dragOverCanvas($event)"
-        (dragleave)="dragLeaveCanvas($event)"
-        (drop)="drop($event)"
-      >
-        @for (block of blocks(); track block.id; let i = $index) {
-          @if (dropIndex() === i) {
-            <div class="ub__drop" aria-hidden="true"></div>
-          }
+      <div class="ub__stage">
+        <div
+          class="ub__canvas"
+          role="group"
+          aria-label="Page canvas"
+          [appShadowHtml]="pageHtml()"
+          [css]="canvasCss()"
+          (click)="onCanvasClick($event)"
+          (dragstart)="onCanvasDragStart($event)"
+          (dragover)="onCanvasDragOver($event)"
+          (dragleave)="onCanvasDragLeave($event)"
+          (drop)="onCanvasDrop($event)"
+          (dragend)="dragEnd()"
+        ></div>
+        @if (dropBox(); as box) {
           <div
-            class="ub__slot"
-            role="group"
-            tabindex="0"
-            draggable="true"
-            [class.ub__slot--selected]="selectedId() === block.id"
-            [class.ub__slot--dragging]="draggingId() === block.id"
-            [attr.aria-label]="
-              label(block) +
-              ' block, position ' +
-              (i + 1) +
-              ' of ' +
-              blocks().length +
-              '. Press Enter to edit.'
-            "
-            (click)="select(block.id)"
-            (keydown)="onKey($event, block)"
-            (dragstart)="dragMove($event, block)"
-            (dragend)="dragEnd()"
-            (dragover)="dragOverBlock($event, i)"
-          >
-            <div class="ub__toolbar">
-              <span class="ub__tag">{{ label(block) }}</span>
-              <button
-                type="button"
-                class="ub__tool"
-                [disabled]="i === 0"
-                [attr.aria-label]="'Move ' + label(block) + ' up'"
-                (click)="shift(block, -1); $event.stopPropagation()"
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                class="ub__tool"
-                [disabled]="i === blocks().length - 1"
-                [attr.aria-label]="'Move ' + label(block) + ' down'"
-                (click)="shift(block, 1); $event.stopPropagation()"
-              >
-                ↓
-              </button>
-              <button
-                type="button"
-                class="ub__tool"
-                [attr.aria-label]="'Remove ' + label(block)"
-                (click)="remove(block); $event.stopPropagation()"
-              >
-                ✕
-              </button>
-            </div>
-            <div class="ub__preview" inert [appShadowHtml]="html(block)" [css]="exportCss"></div>
-          </div>
-        } @empty {
-          <p class="ub__empty">Drop a block here, or click one on the left.</p>
-        }
-        @if (dropIndex() === blocks().length && blocks().length) {
-          <div class="ub__drop" aria-hidden="true"></div>
+            class="ub__drop"
+            [class.ub__drop--line]="box.line"
+            aria-hidden="true"
+            [style.top.px]="box.top"
+            [style.left.px]="box.left"
+            [style.width.px]="box.width"
+            [style.height.px]="box.height"
+          ></div>
         }
       </div>
     </div>

@@ -81,7 +81,7 @@ function renderChildren(node: UbNode, opts: RenderOptions): string {
 }
 
 export function renderNode(node: UbNode, opts: RenderOptions): string {
-  const mark = opts.editor ? ` data-ub-id="${escapeHtml(node.id)}"` : '';
+  const mark = opts.editor ? ` data-ub-id="${escapeHtml(node.id)}" draggable="true"` : '';
   const inner = isContainer(node.type) ? renderChildren(node, opts) : '';
 
   switch (node.type) {

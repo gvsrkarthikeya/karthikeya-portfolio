@@ -43,6 +43,11 @@ describe('builder storage', () => {
     expect(node.props['label']).toBe('Hi');
   });
 
+  it('rejects ids that are not plain tokens', () => {
+    const bad = { id: 'a"]{}', type: 'section', props: {}, children: [] };
+    expect(deserialize(JSON.stringify(bad))).toBeNull();
+  });
+
   it('does not hand out ids that collide with a loaded tree', () => {
     const loaded = deserialize(
       JSON.stringify({ id: 'n99999', type: 'section', props: {}, children: [] }),

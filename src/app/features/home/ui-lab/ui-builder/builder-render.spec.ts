@@ -50,6 +50,12 @@ describe('builder render', () => {
     for (const id of ids(root)) expect(editor).toContain(`data-ub-id="${id}"`);
   });
 
+  it('makes editor nodes draggable but not exported ones', () => {
+    const node = createNode('text');
+    expect(renderNode(node, EDITOR)).toContain('draggable="true"');
+    expect(renderNode(node, EXPORT)).not.toContain('draggable');
+  });
+
   it('maps button props to classes', () => {
     const html = renderNode(
       createNode('button', { variant: 'outline', tone: 'danger', size: 'lg', fullWidth: true }),

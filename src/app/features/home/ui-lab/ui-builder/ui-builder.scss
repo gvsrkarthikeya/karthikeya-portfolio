@@ -35,7 +35,12 @@
   border-radius: var(--radius-control);
 }
 
+.ub__stage {
+  position: relative;
+}
+
 .ub__canvas {
+  display: block;
   min-height: 14rem;
   padding: 0.5rem;
   background: var(--color-surface-raised);
@@ -43,83 +48,18 @@
   border-radius: var(--radius-card);
 }
 
-.ub__empty {
-  margin: 4rem 0;
-  text-align: center;
-  color: var(--color-text-muted);
-}
-
-.ub__slot {
-  position: relative;
-  margin-bottom: 0.5rem;
-  overflow: hidden;
-  background: var(--color-surface);
-  border: 2px solid transparent;
-  border-radius: var(--radius-control);
-  cursor: grab;
-  transition:
-    border-color 0.15s,
-    opacity 0.15s;
-
-  &:hover,
-  &:focus-visible {
-    border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
-  }
-
-  &--selected {
-    border-color: var(--color-primary);
-  }
-
-  &--dragging {
-    opacity: 0.4;
-  }
-}
-
-.ub__toolbar {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  z-index: 1;
-  display: flex;
-  gap: 0.2rem;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.ub__slot:hover .ub__toolbar,
-.ub__slot:focus-within .ub__toolbar,
-.ub__slot--selected .ub__toolbar {
-  opacity: 1;
-}
-
-.ub__tag,
-.ub__tool {
-  padding: 0.1rem 0.45rem;
-  font-size: 0.72rem;
-  color: var(--color-on-primary);
-  background: var(--color-primary);
-  border: 0;
-  border-radius: var(--radius-control);
-}
-
-.ub__tool {
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-}
-
-.ub__preview {
-  pointer-events: none;
-}
-
 .ub__drop {
-  height: 4px;
-  margin: 0 0 0.5rem;
-  background: var(--color-primary);
-  border-radius: 2px;
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  border: 2px solid var(--color-primary);
+  border-radius: 4px;
+
+  &--line {
+    background: var(--color-primary);
+    border: 0;
+    transform: translateY(-2px);
+  }
 }
 
 .ub__code {
@@ -132,11 +72,4 @@
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ub__slot,
-  .ub__toolbar {
-    transition: none;
-  }
 }

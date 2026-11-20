@@ -10,6 +10,8 @@ import {
 
 export const STORAGE_KEY = 'portfolio.uibuilder.v2';
 
+const SAFE_ID = /^[\w-]{1,40}$/;
+
 export const serialize = (root: UbNode): string => JSON.stringify(root);
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
@@ -33,7 +35,7 @@ function cleanValue(schema: PropSchema, value: unknown): PropValue {
 function parseNode(raw: unknown, depth: number, seen: Set<string>): UbNode | null {
   if (depth > MAX_DEPTH || !isRecord(raw)) return null;
   const { id, type, props, children } = raw;
-  if (typeof id !== 'string' || !id || seen.has(id)) return null;
+  if (typeof id !== 'string' || !SAFE_ID.test(id) || seen.has(id)) return null;
   if (typeof type !== 'string' || !Object.hasOwn(NODE_DEFS, type)) return null;
   if (!isRecord(props) || !Array.isArray(children)) return null;
   seen.add(id);

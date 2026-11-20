@@ -4,75 +4,75 @@ import { UiBuilder } from './ui-builder';
 describe('UiBuilder', () => {
   let el: HTMLElement;
   let fixture: ReturnType<typeof TestBed.createComponent<UiBuilder>>;
+  let cmp: UiBuilder;
 
-  const slots = () => Array.from(el.querySelectorAll<HTMLElement>('.ub__slot'));
-  const tags = () => slots().map((s) => s.querySelector('.ub__tag')?.textContent?.trim());
-  const click = async (selector: string, index = 0) => {
-    el.querySelectorAll<HTMLElement>(selector)[index].click();
-    await fixture.whenStable();
+  const page = () => el.querySelector<HTMLElement>('.ub__canvas')!.shadowRoot!;
+  const idOf = (selector: string) => page().querySelector(selector)!.getAttribute('data-ub-id')!;
+  const code = () => el.querySelector('.ub__code')?.textContent ?? '';
+  const status = () => el.querySelector('[role="status"]')?.textContent ?? '';
+  const settle = () => fixture.whenStable();
+  const clickPalette = async (label: string) => {
+    el.querySelector<HTMLElement>(`button[aria-label="Add ${label}"]`)!.click();
+    await settle();
+  };
+  const clickNode = async (selector: string) => {
+    page().querySelector<HTMLElement>(selector)!.click();
+    await settle();
   };
 
   beforeEach(async () => {
+    localStorage.clear();
     fixture = TestBed.createComponent(UiBuilder);
     el = fixture.nativeElement;
-    await fixture.whenStable();
+    cmp = fixture.componentInstance;
+    await settle();
   });
 
-  it('starts with a sample page', () => {
-    expect(tags()).toEqual(['Navbar', 'Hero', 'Cards', 'Footer']);
+  it('renders the starter page inside a shadow root, keeping headings out of the page', () => {
+    expect(el.querySelector('h1, section')).toBeNull();
+    expect(page().querySelector('h1')).toBeTruthy();
   });
 
-  it('adds a block from the palette and selects it', async () => {
-    await click('.ub__chip', 4); // Button
-    expect(tags().at(-1)).toBe('Button');
-    expect(slots().at(-1)?.classList).toContain('ub__slot--selected');
-    expect(el.textContent).toContain('Editing: Button');
+  it('selects a node when it is clicked inside the shadow root', async () => {
+    await clickNode('h1');
+    expect(el.textContent).toContain('Editing: Heading');
   });
 
-  it('moves and removes blocks with the toolbar buttons', async () => {
-    await click('button[aria-label="Move Hero up"]');
-    expect(tags().slice(0, 2)).toEqual(['Hero', 'Navbar']);
-    await click('button[aria-label="Remove Hero"]');
-    expect(tags()).toEqual(['Navbar', 'Cards', 'Footer']);
+  it('inserts a palette component inside the selected container', async () => {
+    await clickPalette('Card');
+    await clickPalette('Button');
+    expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
 
-  it('disables moving the first block up and the last block down', () => {
-    const up = el.querySelector<HTMLButtonElement>('button[aria-label="Move Navbar up"]');
-    const down = el.querySelector<HTMLButtonElement>('button[aria-label="Move Footer down"]');
-    expect(up?.disabled).toBe(true);
-    expect(down?.disabled).toBe(true);
+  it('appends to the root when nothing is selected', async () => {
+    await clickPalette('Badge');
+    expect(page().querySelector('.ub-section > .ub-badge')).toBeTruthy();
+    expect(status()).toContain('Badge added');
   });
 
-  it('edits the selected block and reflects it in preview and export', async () => {
-    await click('.ub__slot', 1); // Hero
-    const input = el.querySelector<HTMLInputElement>('#ub-title')!;
-    input.value = 'Hello <world>';
-    input.dispatchEvent(new Event('input'));
-    await fixture.whenStable();
-    expect(
-      slots()[1].querySelector('.ub__preview')?.shadowRoot?.querySelector('h1')?.textContent,
-    ).toBe('Hello <world>');
-    expect(el.querySelector('.ub__code')?.textContent).toContain('Hello &lt;world&gt;');
+  it('nests a dropped button inside a card via dropAt', async () => {
+    await clickPalette('Card');
+    const cardId = idOf('.ub-card');
+    cmp.dropAt(cardId, 0, { kind: 'new', type: 'button' });
+    await settle();
+    expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
 
-  it('switches the export between HTML and CSS', async () => {
-    expect(el.querySelector('.ub__code')?.textContent).toContain('class="ub-navbar');
-    await click('.btn-group[aria-label="Export format"] button', 1);
-    expect(el.querySelector('.ub__code')?.textContent).toContain('.ub-btn');
+  it('rejects dropping a container into its own descendant and keeps the tree', async () => {
+    await clickPalette('Card');
+    const cardId = idOf('.ub-card');
+    cmp.dropAt(cardId, 0, { kind: 'new', type: 'stack' });
+    await settle();
+    const before = code();
+    const innerId = page().querySelector('.ub-card .ub-stack')!.getAttribute('data-ub-id')!;
+    cmp.dropAt(innerId, 0, { kind: 'move', id: cardId });
+    await settle();
+    expect(code()).toBe(before);
+    expect(status()).toContain("can't");
   });
 
-  it('clears the canvas and shows the empty hint', async () => {
-    await click('button.btn-outline-secondary', 1); // Clear
-    expect(slots()).toHaveLength(0);
-    expect(el.querySelector('.ub__empty')).toBeTruthy();
-  });
-
-  it('keeps preview markup out of the page so headings and landmarks do not leak', () => {
-    expect(el.querySelector('h1, section, nav')).toBeNull();
-    expect(slots()[1].querySelector('.ub__preview')?.shadowRoot?.querySelector('h1')).toBeTruthy();
-  });
-
-  it('keeps the interactive preview inert', () => {
-    expect(el.querySelector('.ub__preview')?.hasAttribute('inert')).toBe(true);
+  it('inserts a preset subtree', async () => {
+    await clickPalette('Pricing card');
+    expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
 });
