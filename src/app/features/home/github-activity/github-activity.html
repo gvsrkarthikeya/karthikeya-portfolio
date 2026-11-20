@@ -16,6 +16,12 @@
                 <dt>Public repos</dt>
                 <dd>{{ s.profile.publicRepos }}</dd>
               </div>
+              @if (s.privateRepos) {
+                <div class="gh__stat">
+                  <dt>Private repos</dt>
+                  <dd>{{ s.privateRepos }}</dd>
+                </div>
+              }
               <div class="gh__stat">
                 <dt>Followers</dt>
                 <dd>{{ s.profile.followers }}</dd>
