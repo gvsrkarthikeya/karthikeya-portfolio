@@ -1,7 +1,7 @@
 <header class="site-header border-bottom">
   <div class="container">
     <div class="navbar navbar-expand-lg px-0">
-      <a class="navbar-brand fw-semibold" href="#home">{{ brand() }}</a>
+      <a class="navbar-brand fw-semibold" routerLink="/" (click)="closeMenu()">{{ brand() }}</a>
       <div class="site-header__action">
         <ng-content select="[headerAction]" />
       </div>
@@ -22,13 +22,14 @@
         aria-label="Primary"
       >
         <ul class="navbar-nav">
-          @for (item of navItems(); track item.fragment) {
-            <li class="nav-item">
+          @for (item of navItems(); track item.label) {
+            <li class="nav-item" [class.nav-item--pages]="startsPages($index)">
               <a
                 class="nav-link"
-                [class.active]="activeSection() === item.fragment"
-                [attr.aria-current]="activeSection() === item.fragment ? 'location' : null"
-                [href]="'#' + item.fragment"
+                [class.active]="isActive(item)"
+                [attr.aria-current]="isActive(item) ? 'page' : null"
+                [routerLink]="'/' + item.path"
+                [fragment]="item.fragment"
                 (click)="closeMenu()"
                 >{{ item.label }}</a
               >

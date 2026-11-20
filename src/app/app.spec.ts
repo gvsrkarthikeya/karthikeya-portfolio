@@ -1,8 +1,11 @@
 import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
 import { App } from './app';
+import { routes } from './app.routes';
 
 describe('App', () => {
   beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
@@ -11,8 +14,9 @@ describe('App', () => {
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  async function render(): Promise<HTMLElement> {
+  async function render(url = '/'): Promise<HTMLElement> {
     const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl(url);
     await fixture.whenStable();
     return fixture.nativeElement as HTMLElement;
   }
@@ -45,7 +49,7 @@ describe('App', () => {
     );
   });
 
-  it('renders every portfolio section in order', async () => {
+  it('renders the home sections on the home page', async () => {
     const element = await render();
     const ids = Array.from(element.querySelectorAll('main section')).map((s) => s.id);
 
@@ -55,27 +59,58 @@ describe('App', () => {
       'experience',
       'skills',
       'projects',
-      'ui-lab',
-      'github',
+      'explore',
       'education',
       'contact',
     ]);
   });
 
-  it('links each section from the header navigation', async () => {
+  it.each([
+    ['/github', 'github'],
+    ['/lab', 'ui-lab'],
+  ])('renders only the %s section on its own page', async (url, id) => {
+    const element = await render(url);
+    const ids = Array.from(element.querySelectorAll('main section')).map((s) => s.id);
+
+    expect(ids).toEqual([id]);
+  });
+
+  it('redirects unknown URLs to the home page', async () => {
+    await render('/nope');
+
+    expect(TestBed.inject(Router).url).toBe('/');
+  });
+
+  it('links to the GitHub and UI Lab pages from the home page', async () => {
+    const element = await render();
+    const hrefs = Array.from(element.querySelectorAll('main app-explore a')).map((a) =>
+      a.getAttribute('href'),
+    );
+
+    expect(hrefs).toEqual(['/github', '/lab']);
+  });
+
+  it('links home sections and pages from the header navigation', async () => {
     const element = await render();
     const hrefs = Array.from(element.querySelectorAll('nav[aria-label="Primary"] a')).map((a) =>
       a.getAttribute('href'),
     );
 
     expect(hrefs).toEqual([
-      '#about',
-      '#experience',
-      '#skills',
-      '#projects',
-      '#ui-lab',
-      '#education',
-      '#contact',
+      '/#about',
+      '/#experience',
+      '/#skills',
+      '/#projects',
+      '/#contact',
+      '/github',
+      '/lab',
     ]);
+  });
+
+  it('marks the current page link in the header', async () => {
+    const element = await render('/github');
+    const current = element.querySelector('nav[aria-label="Primary"] a[aria-current="page"]');
+
+    expect(current?.textContent?.trim()).toBe('GitHub');
   });
 });

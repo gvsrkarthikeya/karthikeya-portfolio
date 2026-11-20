@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { SiteHeader } from './site-header';
 
 describe('SiteHeader', () => {
@@ -7,9 +8,13 @@ describe('SiteHeader', () => {
   let element: HTMLElement;
 
   beforeEach(async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
     fixture = TestBed.createComponent(SiteHeader);
     fixture.componentRef.setInput('brand', 'GVSR Karthikeya');
-    fixture.componentRef.setInput('navItems', [{ label: 'About', fragment: 'about' }]);
+    fixture.componentRef.setInput('navItems', [
+      { label: 'About', path: '', fragment: 'about' },
+      { label: 'GitHub', path: 'github' },
+    ]);
     await fixture.whenStable();
     element = fixture.nativeElement as HTMLElement;
   });
@@ -26,15 +31,15 @@ describe('SiteHeader', () => {
     expect(element.querySelector('header')?.textContent).toContain('GVSR Karthikeya');
   });
 
-  it('renders section navigation with fragment links', () => {
-    const link = element.querySelector('nav[aria-label="Primary"] a');
+  it('renders navigation links for home sections and separate pages', () => {
+    const links = Array.from(element.querySelectorAll('nav[aria-label="Primary"] a'));
 
-    expect(link?.getAttribute('href')).toBe('#about');
-    expect(link?.textContent?.trim()).toBe('About');
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(['/#about', '/github']);
+    expect(links.map((a) => a.textContent?.trim())).toEqual(['About', 'GitHub']);
   });
 
-  it('links the brand to the home section', () => {
-    expect(element.querySelector('a.navbar-brand')?.getAttribute('href')).toBe('#home');
+  it('links the brand to the home page', () => {
+    expect(element.querySelector('a.navbar-brand')?.getAttribute('href')).toBe('/');
   });
 
   it('keeps the inline menu for large screens only', () => {

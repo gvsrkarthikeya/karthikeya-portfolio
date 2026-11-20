@@ -8,7 +8,7 @@ describe('CommandPalette', () => {
     localStorage.clear();
     const fixture = TestBed.createComponent(CommandPalette);
     const content = TestBed.inject(PortfolioDataService).content;
-    fixture.componentRef.setInput('navItems', [{ label: 'Skills', fragment: 'skills' }]);
+    fixture.componentRef.setInput('navItems', [{ label: 'Skills', path: '', fragment: 'skills' }]);
     fixture.componentRef.setInput('profile', content.profile);
     return {
       fixture,

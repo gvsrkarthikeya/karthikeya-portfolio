@@ -70,12 +70,37 @@
               @if (s.activity; as activity) {
                 <div [class]="s.languages.length ? 'col-12 col-lg-7' : 'col-12'">
                   <div class="gh__card h-100 p-3">
-                    <h3 class="h6 text-uppercase text-body-secondary mb-3">
-                      Recent activity
-                      <span class="text-lowercase fw-normal"
-                        >· {{ activity.commits }} commits in the last 12 weeks</span
+                    <div
+                      class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3"
+                    >
+                      <h3 class="h6 text-uppercase text-body-secondary mb-0">
+                        Recent activity
+                        <span class="text-lowercase fw-normal"
+                          >· {{ activity.commits }} commits in the last 12 weeks</span
+                        >
+                      </h3>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary gh__refresh"
+                        [disabled]="cooling() || github.refreshing()"
+                        (click)="refresh()"
                       >
-                    </h3>
+                        <span aria-hidden="true">↻</span>
+                        {{ github.refreshing() ? 'Refreshing…' : 'Refresh' }}
+                      </button>
+                    </div>
+                    <p class="small text-body-secondary" role="status">
+                      @if (github.refreshFailed()) {
+                        Couldn't refresh, so the previous data is shown.
+                      }
+                      @if (github.updatedAt(); as at) {
+                        Updated {{ time(at) }}.
+                      }
+                      @if (github.rateLimit(); as rl) {
+                        {{ rl.remaining }} of {{ rl.limit }} GitHub API calls left this hour (resets
+                        {{ time(rl.resetAt) }}).
+                      }
+                    </p>
                     <div
                       class="gh__map"
                       role="img"
