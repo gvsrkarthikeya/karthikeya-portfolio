@@ -2,6 +2,15 @@ import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 
 describe('App', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }),
+    );
+    sessionStorage.clear();
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
   async function render(): Promise<HTMLElement> {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
@@ -47,6 +56,7 @@ describe('App', () => {
       'skills',
       'projects',
       'ui-lab',
+      'github',
       'education',
       'contact',
     ]);

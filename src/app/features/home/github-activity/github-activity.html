@@ -1,0 +1,184 @@
+<section id="github" class="section py-5" aria-labelledby="github-heading" appReveal>
+  <h2 id="github-heading" class="h3 fw-bold mb-2">GitHub</h2>
+  <p class="text-body-secondary mb-4">
+    Live from the GitHub API for
+    <a [href]="profileUrl()" target="_blank" rel="noopener noreferrer">&#64;{{ username() }}</a
+    >.
+  </p>
+
+  <div aria-live="polite">
+    @switch (state().status) {
+      @case ('ready') {
+        @if (state(); as s) {
+          @if (s.status === 'ready') {
+            <dl class="gh__stats d-flex flex-wrap gap-3 mb-3">
+              <div class="gh__stat">
+                <dt>Public repos</dt>
+                <dd>{{ s.profile.publicRepos }}</dd>
+              </div>
+              <div class="gh__stat">
+                <dt>Followers</dt>
+                <dd>{{ s.profile.followers }}</dd>
+              </div>
+              <div class="gh__stat">
+                <dt>Stars earned</dt>
+                <dd>{{ s.stars }}</dd>
+              </div>
+              <div class="gh__stat">
+                <dt>On GitHub since</dt>
+                <dd>{{ since(s.profile.createdAt) }}</dd>
+              </div>
+            </dl>
+
+            <div class="row g-3 mb-4">
+              @if (s.languages.length) {
+                <div class="col-12 col-lg-5">
+                  <div class="gh__card h-100 p-3">
+                    <h3 class="h6 text-uppercase text-body-secondary mb-3">Languages</h3>
+                    <div
+                      class="gh__bar"
+                      role="img"
+                      [attr.aria-label]="'Languages by repository: ' + languageSummary(s.languages)"
+                    >
+                      @for (lang of s.languages; track lang.name; let i = $index) {
+                        <span
+                          class="gh__seg"
+                          [style.width.%]="lang.percent"
+                          [style.background]="languageColors[i % languageColors.length]"
+                        ></span>
+                      }
+                    </div>
+                    <ul class="list-unstyled small mb-0 mt-3 d-flex flex-wrap gap-3">
+                      @for (lang of s.languages; track lang.name; let i = $index) {
+                        <li>
+                          <span
+                            class="gh__dot"
+                            aria-hidden="true"
+                            [style.background]="languageColors[i % languageColors.length]"
+                          ></span>
+                          {{ lang.name }}
+                          <span class="text-body-secondary">{{ lang.percent }}%</span>
+                        </li>
+                      }
+                    </ul>
+                    <p class="small text-body-secondary mt-2 mb-0">
+                      Share of public repos by primary language.
+                    </p>
+                  </div>
+                </div>
+              }
+              @if (s.activity; as activity) {
+                <div [class]="s.languages.length ? 'col-12 col-lg-7' : 'col-12'">
+                  <div class="gh__card h-100 p-3">
+                    <h3 class="h6 text-uppercase text-body-secondary mb-3">
+                      Recent activity
+                      <span class="text-lowercase fw-normal"
+                        >· {{ activity.commits }} commits in the last 12 weeks</span
+                      >
+                    </h3>
+                    <div
+                      class="gh__map"
+                      role="img"
+                      [attr.aria-label]="
+                        activity.commits + ' commits to public repositories in the last 12 weeks'
+                      "
+                    >
+                      <div class="gh__months" aria-hidden="true">
+                        @for (week of activity.weeks; track week.start) {
+                          <span>{{ week.label }}</span>
+                        }
+                      </div>
+                      <div class="gh__dows" aria-hidden="true">
+                        <span></span><span>Mon</span><span></span><span>Wed</span><span></span
+                        ><span>Fri</span><span></span>
+                      </div>
+                      <div class="gh__heatmap">
+                        @for (day of activity.days; track day.date) {
+                          <span
+                            class="gh__cell"
+                            [class.gh__cell--future]="day.future"
+                            [attr.data-level]="level(day.count)"
+                            [attr.title]="dayLabel(day.date, day.count)"
+                          ></span>
+                        }
+                      </div>
+                      <div class="gh__totals" aria-hidden="true">
+                        @for (week of activity.weeks; track week.start; let w = $index) {
+                          <span [attr.title]="weekLabel(week.start)">{{
+                            weekTotal(activity.days, w)
+                          }}</span>
+                        }
+                      </div>
+                    </div>
+                    <p class="small text-body-secondary mt-1 mb-0">
+                      Commits per day (hover a cell); numbers below are commits per week.
+                    </p>
+                    @if (activity.feed.length) {
+                      <ul class="gh__feed list-unstyled small mb-0 mt-3">
+                        @for (item of activity.feed; track item.at + item.text) {
+                          <li>
+                            <span>{{ item.text }}</span>
+                            <span class="text-body-secondary">{{ ago(item.at) }}</span>
+                          </li>
+                        }
+                      </ul>
+                    } @else {
+                      <p class="small text-body-secondary mt-3 mb-0">
+                        No public activity in the recent window.
+                      </p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (s.repos.length) {
+              <div class="row g-3">
+                @for (repo of s.repos; track repo.name; let i = $index) {
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <a
+                      class="gh__repo h-100 d-block p-3"
+                      [href]="repo.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h3 class="h6 mb-1">{{ repo.name }}</h3>
+                      <p class="small text-body-secondary mb-2">
+                        {{ repo.description ?? 'No description' }}
+                      </p>
+                      <p class="small mb-0 d-flex flex-wrap gap-2">
+                        @if (repo.language) {
+                          <span class="gh__lang">{{ repo.language }}</span>
+                        }
+                        <span aria-label="{{ repo.stars }} stars">★ {{ repo.stars }}</span>
+                        <span aria-label="{{ repo.forks }} forks">⑂ {{ repo.forks }}</span>
+                        <span class="ms-auto">{{ ago(repo.pushedAt) }}</span>
+                      </p>
+                    </a>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-body-secondary">No public repositories to show yet.</p>
+            }
+          }
+        }
+      }
+      @case ('error') {
+        <p class="text-body-secondary">
+          Couldn't load GitHub data (rate limit or network).
+          <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="retry()">
+            Retry
+          </button>
+        </p>
+      }
+      @default {
+        <div class="row g-3" aria-label="Loading GitHub data">
+          @for (n of [1, 2, 3]; track n) {
+            <div class="col-12 col-md-6 col-lg-4"><div class="gh__skeleton"></div></div>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>
