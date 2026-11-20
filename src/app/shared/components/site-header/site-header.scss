@@ -2,6 +2,14 @@
   background-color: var(--bs-body-bg);
 }
 
+// Keeps the header (and its dropdowns) above the page content below. Without it, designs whose
+// cards use backdrop-filter paint over the style menu on mobile and swallow its clicks.
+:host {
+  position: relative;
+  z-index: 1030;
+  display: block;
+}
+
 @media (min-width: 992px) {
   :host {
     position: sticky;
