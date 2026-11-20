@@ -40,13 +40,6 @@ export interface GithubActivityData {
   feed: ActivityFeedItem[];
 }
 
-export interface RateLimit {
-  remaining: number;
-  limit: number;
-  /** Epoch milliseconds when the window resets. */
-  resetAt: number;
-}
-
 export type GithubState =
   | { status: 'idle' | 'loading' | 'error' }
   | {
@@ -150,62 +143,20 @@ export class GithubService {
   private readonly current = signal<GithubState>({ status: 'idle' });
   readonly state = this.current.asReadonly();
 
-  private readonly refreshingFlag = signal(false);
-  private readonly refreshFailedFlag = signal(false);
-  private readonly updated = signal<number | null>(null);
-  private readonly limit = signal<RateLimit | null>(null);
-  readonly refreshing = this.refreshingFlag.asReadonly();
-  readonly refreshFailed = this.refreshFailedFlag.asReadonly();
-  readonly updatedAt = this.updated.asReadonly();
-  /** Most recent quota GitHub reported, so visitors (and I) can see how many calls remain. */
-  readonly rateLimit = this.limit.asReadonly();
-
-  /** Bypasses the cache. Keeps showing the current data while loading, and keeps it if the refresh fails. */
-  async refresh(username: string): Promise<void> {
-    if (this.refreshingFlag()) return;
-    this.refreshingFlag.set(true);
-    this.refreshFailedFlag.set(false);
-    try {
-      await this.load(username, true);
-    } finally {
-      this.refreshingFlag.set(false);
-    }
-  }
-
-  async load(username: string, force = false): Promise<void> {
-    if (!force) {
-      const cached = this.readCache(username);
-      if (cached) {
-        this.current.set(cached.state);
-        this.updated.set(cached.at);
-        return;
-      }
+  async load(username: string): Promise<void> {
+    const cached = this.readCache(username);
+    if (cached) {
+      this.current.set(cached);
+      return;
     }
 
-    const previous = this.current();
-    if (!force || previous.status !== 'ready') this.current.set({ status: 'loading' });
-    let lowest: RateLimit | null = null;
-    const get = async (url: string): Promise<Response> => {
-      const res = await fetch(url);
-      const remaining = Number(res.headers?.get('x-ratelimit-remaining'));
-      if (res.headers?.get('x-ratelimit-remaining') != null && !Number.isNaN(remaining)) {
-        if (!lowest || remaining < lowest.remaining) {
-          lowest = {
-            remaining,
-            limit: Number(res.headers.get('x-ratelimit-limit')) || 60,
-            resetAt: Number(res.headers.get('x-ratelimit-reset')) * 1000,
-          };
-        }
-        this.limit.set(lowest);
-      }
-      return res;
-    };
+    this.current.set({ status: 'loading' });
     try {
       const base = `https://api.github.com/users/${encodeURIComponent(username)}`;
       const [userRes, reposRes, eventsRes] = await Promise.all([
-        get(base),
-        get(`${base}/repos?per_page=100&sort=pushed`),
-        get(`${base}/events/public?per_page=100`).catch(() => null),
+        fetch(base),
+        fetch(`${base}/repos?per_page=100&sort=pushed`),
+        fetch(`${base}/events/public?per_page=100`).catch(() => null),
       ]);
       if (!userRes.ok || !reposRes.ok) {
         throw new Error(`GitHub responded ${userRes.status}/${reposRes.status}`);
@@ -228,7 +179,7 @@ export class GithubService {
       let activity: GithubActivityData | undefined;
       try {
         const events = eventsRes?.ok ? ((await eventsRes.json()) as RawEvent[]) : [];
-        const commitDates = await this.fetchCommitDates(username, owned, get);
+        const commitDates = await this.fetchCommitDates(username, owned);
         if (commitDates) activity = buildActivity(events, commitDates);
       } catch {
         // Activity is optional; the rest of the section still renders.
@@ -249,15 +200,9 @@ export class GithubService {
         activity,
       };
       this.current.set(state);
-      this.updated.set(Date.now());
       this.writeCache(username, state);
     } catch {
-      if (force && previous.status === 'ready') {
-        this.current.set(previous);
-        this.refreshFailedFlag.set(true);
-      } else {
-        this.current.set({ status: 'error' });
-      }
+      this.current.set({ status: 'error' });
     }
   }
 
@@ -265,7 +210,6 @@ export class GithubService {
   private async fetchCommitDates(
     username: string,
     owned: Record<string, unknown>[],
-    get: (url: string) => Promise<Response>,
   ): Promise<string[] | null> {
     const since = new Date(Date.now() - (WEEKS * 7 + 7) * DAY_MS).toISOString();
     const recent = owned.filter((r) => String(r['pushed_at']) >= since).slice(0, 8);
@@ -274,7 +218,7 @@ export class GithubService {
         try {
           const dates: string[] = [];
           for (let page = 1; page <= 3; page++) {
-            const res = await get(
+            const res = await fetch(
               `https://api.github.com/repos/${encodeURIComponent(username)}/${encodeURIComponent(String(r['name']))}/commits?author=${encodeURIComponent(username)}&since=${since}&per_page=100&page=${page}`,
             );
             if (!res.ok) return page === 1 ? null : dates;
@@ -292,12 +236,12 @@ export class GithubService {
     return results.flatMap((r) => r ?? []);
   }
 
-  private readCache(username: string): { at: number; state: GithubState } | null {
+  private readCache(username: string): GithubState | null {
     try {
       const raw = sessionStorage.getItem(`portfolio.github.v3.${username}`);
       if (!raw) return null;
       const { at, state } = JSON.parse(raw) as { at: number; state: GithubState };
-      return Date.now() - at < CACHE_TTL_MS ? { at, state } : null;
+      return Date.now() - at < CACHE_TTL_MS ? state : null;
     } catch {
       return null;
     }

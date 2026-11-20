@@ -2,11 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   afterNextRender,
-  DestroyRef,
   computed,
   inject,
   input,
-  signal,
 } from '@angular/core';
 import { GithubService } from '../../../core/services/github.service';
 import { Reveal } from '../../../shared/directives/reveal';
@@ -27,24 +25,8 @@ export class GithubActivity {
     () => this.profileUrl().replace(/\/+$/, '').split('/').pop() ?? '',
   );
 
-  protected readonly cooling = signal(false);
-  private readonly destroyRef = inject(DestroyRef);
-
   constructor() {
     afterNextRender(() => void this.github.load(this.username()));
-  }
-
-  /** A short cooldown keeps repeated clicks from burning the 60 requests per hour GitHub allows. */
-  protected async refresh(): Promise<void> {
-    if (this.cooling() || this.github.refreshing()) return;
-    this.cooling.set(true);
-    const timer = setTimeout(() => this.cooling.set(false), 30_000);
-    this.destroyRef.onDestroy(() => clearTimeout(timer));
-    await this.github.refresh(this.username());
-  }
-
-  protected time(epoch: number): string {
-    return new Date(epoch).toLocaleTimeString('en', { hour: 'numeric', minute: '2-digit' });
   }
 
   protected readonly languageColors = [

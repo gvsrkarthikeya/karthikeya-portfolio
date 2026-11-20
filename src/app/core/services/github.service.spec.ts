@@ -57,57 +57,6 @@ describe('GithubService', () => {
     await service.load('someone');
     expect(service.state().status).toBe('error');
   });
-
-  describe('refresh', () => {
-    const headers = (remaining: number) => ({
-      get: (name: string) =>
-        ({
-          'x-ratelimit-remaining': String(remaining),
-          'x-ratelimit-limit': '60',
-          'x-ratelimit-reset': '1800000000',
-        })[name] ?? null,
-    });
-    const respond = (remaining: number, publicRepos: number) =>
-      vi.fn((url: string) =>
-        Promise.resolve({
-          ...ok(url.includes('/repos') ? [] : { public_repos: publicRepos, followers: 0 }),
-          headers: headers(remaining),
-        }),
-      );
-
-    it('skips the cache, updates the data and reports the remaining quota', async () => {
-      const fetchMock = respond(41, 5);
-      vi.stubGlobal('fetch', fetchMock);
-      const service = TestBed.inject(GithubService);
-      await service.load('someone');
-      const callsAfterLoad = fetchMock.mock.calls.length;
-
-      await service.load('someone');
-      expect(fetchMock.mock.calls.length).toBe(callsAfterLoad); // served from the cache
-
-      vi.stubGlobal('fetch', respond(30, 7));
-      await service.refresh('someone');
-      const state = service.state();
-      expect(state.status === 'ready' && state.profile.publicRepos).toBe(7);
-      expect(service.rateLimit()?.remaining).toBe(30);
-      expect(service.refreshing()).toBe(false);
-    });
-
-    it('keeps the previous data when a refresh fails', async () => {
-      vi.stubGlobal('fetch', respond(41, 5));
-      const service = TestBed.inject(GithubService);
-      await service.load('someone');
-
-      vi.stubGlobal(
-        'fetch',
-        vi.fn().mockResolvedValue({ ok: false, status: 403, json: async () => ({}) }),
-      );
-      await service.refresh('someone');
-      const state = service.state();
-      expect(state.status === 'ready' && state.profile.publicRepos).toBe(5);
-      expect(service.refreshFailed()).toBe(true);
-    });
-  });
 });
 
 describe('GitHub insight helpers', () => {
