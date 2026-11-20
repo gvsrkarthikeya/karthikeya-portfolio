@@ -8,6 +8,7 @@ import { Education } from './features/home/education/education';
 import { Experience } from './features/home/experience/experience';
 import { Hero } from './features/home/hero/hero';
 import { Projects } from './features/home/projects/projects';
+import { GithubActivity } from './features/home/github-activity/github-activity';
 import { UiLab } from './features/home/ui-lab/ui-lab';
 import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
@@ -30,6 +31,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
     Skills,
     Projects,
     UiLab,
+    GithubActivity,
     Education,
     Contact,
     SiteFooter,
@@ -52,6 +54,9 @@ export class App {
   protected readonly projects = this.content.projects;
   protected readonly education = this.content.education;
   protected readonly certifications = this.content.certifications;
+
+  protected readonly githubUrl = this.profile.socialLinks.find((link) => link.kind === 'github')
+    ?.url;
 
   protected readonly shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
 

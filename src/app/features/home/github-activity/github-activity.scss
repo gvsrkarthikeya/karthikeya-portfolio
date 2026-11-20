@@ -1,0 +1,187 @@
+.gh__stat {
+  min-width: 7rem;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+
+  dt {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+  dd {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+}
+
+.gh__repo {
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-3px);
+  }
+}
+
+.gh__lang {
+  color: var(--color-primary);
+}
+
+.gh__skeleton {
+  height: 7rem;
+  border-radius: var(--radius-card);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-raised),
+    var(--color-surface),
+    var(--color-surface-raised)
+  );
+  background-size: 200% 100%;
+  animation: gh-shimmer 1.4s linear infinite;
+}
+
+@keyframes gh-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh__repo {
+    transition: none;
+  }
+  .gh__skeleton {
+    animation: none;
+  }
+}
+
+.gh__card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.gh__bar {
+  display: flex;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-raised);
+}
+
+.gh__seg {
+  height: 100%;
+  transform-origin: left;
+  animation: gh-grow 0.8s ease-out backwards;
+}
+
+.gh__dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 0.25rem;
+  border-radius: 50%;
+}
+
+.gh__map {
+  --cell: 1.5rem;
+  --gap: 4px;
+  display: grid;
+  grid-template-columns: 2rem auto;
+  column-gap: 0.5rem;
+  row-gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 0.7rem;
+  color: var(--color-text-muted, var(--bs-secondary-color));
+}
+
+.gh__months,
+.gh__totals {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(12, var(--cell));
+  gap: var(--gap);
+
+  span {
+    white-space: nowrap;
+    text-align: center;
+  }
+}
+
+.gh__months span {
+  text-align: left;
+}
+
+.gh__dows {
+  display: grid;
+  grid-template-rows: repeat(7, var(--cell));
+  gap: var(--gap);
+  align-items: center;
+}
+
+.gh__heatmap {
+  display: grid;
+  grid-template-rows: repeat(7, var(--cell));
+  grid-template-columns: repeat(12, var(--cell));
+  grid-auto-flow: column;
+  gap: var(--gap);
+}
+
+.gh__cell {
+  border-radius: 3px;
+  background: var(--color-surface-raised);
+
+  &[data-level='1'] {
+    background: color-mix(in srgb, var(--color-primary) 30%, var(--color-surface-raised));
+  }
+  &[data-level='2'] {
+    background: color-mix(in srgb, var(--color-primary) 55%, var(--color-surface-raised));
+  }
+  &[data-level='3'] {
+    background: color-mix(in srgb, var(--color-primary) 80%, var(--color-surface-raised));
+  }
+  &[data-level='4'] {
+    background: var(--color-primary);
+  }
+  &--future {
+    visibility: hidden;
+  }
+}
+
+.gh__feed li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+@keyframes gh-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh__seg {
+    animation: none;
+  }
+}

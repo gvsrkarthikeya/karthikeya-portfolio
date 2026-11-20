@@ -23,6 +23,9 @@
   <app-skills [groups]="skillGroups" />
   <app-projects [projects]="projects" />
   <app-ui-lab />
+  @if (githubUrl; as url) {
+    <app-github-activity [profileUrl]="url" />
+  }
   <app-education [entries]="education" [certifications]="certifications" />
   <app-contact [profile]="profile" />
 </main>
