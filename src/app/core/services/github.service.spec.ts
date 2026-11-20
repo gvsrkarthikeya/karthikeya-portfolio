@@ -69,7 +69,7 @@ describe('private stats', () => {
     expect(parsePrivateStats({ languages: {}, commits: 'x' })).toBeNull();
     expect(
       parsePrivateStats({ languages: { Go: 2, Bad: 'x' }, commits: ['2026-01-01', 5] }),
-    ).toEqual({ languages: { Go: 2 }, commits: ['2026-01-01'] });
+    ).toEqual({ repos: 0, languages: { Go: 2 }, commits: ['2026-01-01'] });
   });
 
   it('folds private commits and languages into the insights', async () => {
@@ -80,7 +80,7 @@ describe('private stats', () => {
       vi.fn((url: string) =>
         Promise.resolve(
           url === 'github-private.json'
-            ? ok({ languages: { Go: 2 }, commits: [today, today, today] })
+            ? ok({ repos: 3, languages: { Go: 2 }, commits: [today, today, today] })
             : url.includes('/repos?') || url.includes('/events')
               ? ok([])
               : ok({ public_repos: 0, followers: 0 }),

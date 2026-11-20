@@ -52,19 +52,23 @@ export type GithubState =
       activity?: GithubActivityData;
       /** True when counts from private repositories are folded into activity and languages. */
       includesPrivate?: boolean;
+      /** Number of private repositories, when private stats are available. */
+      privateRepos?: number;
     };
 
 /** Aggregate-only data generated at build time from private repos; never contains repo names. */
 export interface PrivateStats {
+  repos: number;
   languages: Record<string, number>;
   commits: string[];
 }
 
 export function parsePrivateStats(raw: unknown): PrivateStats | null {
   if (!raw || typeof raw !== 'object') return null;
-  const { languages, commits } = raw as Partial<PrivateStats>;
+  const { repos, languages, commits } = raw as Partial<PrivateStats>;
   if (!languages || typeof languages !== 'object' || !Array.isArray(commits)) return null;
   return {
+    repos: typeof repos === 'number' && repos > 0 ? repos : 0,
     languages: Object.fromEntries(
       Object.entries(languages).filter(([, n]) => typeof n === 'number' && n > 0),
     ),
@@ -225,6 +229,7 @@ export class GithubService {
         ]),
         activity,
         includesPrivate: !!priv,
+        privateRepos: priv?.repos,
       };
       this.current.set(state);
       this.writeCache(username, state);
@@ -275,7 +280,7 @@ export class GithubService {
 
   private readCache(username: string): GithubState | null {
     try {
-      const raw = sessionStorage.getItem(`portfolio.github.v4.${username}`);
+      const raw = sessionStorage.getItem(`portfolio.github.v5.${username}`);
       if (!raw) return null;
       const { at, state } = JSON.parse(raw) as { at: number; state: GithubState };
       return Date.now() - at < CACHE_TTL_MS ? state : null;
@@ -287,7 +292,7 @@ export class GithubService {
   private writeCache(username: string, state: GithubState): void {
     try {
       sessionStorage.setItem(
-        `portfolio.github.v4.${username}`,
+        `portfolio.github.v5.${username}`,
         JSON.stringify({ at: Date.now(), state }),
       );
     } catch {
