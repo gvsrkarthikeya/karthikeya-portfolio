@@ -62,7 +62,9 @@
                       }
                     </ul>
                     <p class="small text-body-secondary mt-2 mb-0">
-                      Share of public repos by primary language.
+                      Share of
+                      {{ s.includesPrivate ? 'repos (private included)' : 'public repos' }} by
+                      primary language.
                     </p>
                   </div>
                 </div>
@@ -85,7 +87,9 @@
                       class="gh__map"
                       role="img"
                       [attr.aria-label]="
-                        activity.commits + ' commits to public repositories in the last 12 weeks'
+                        activity.commits +
+                        (s.includesPrivate ? ' commits' : ' commits to public repositories') +
+                        ' in the last 12 weeks'
                       "
                     >
                       <div class="gh__months" aria-hidden="true">
