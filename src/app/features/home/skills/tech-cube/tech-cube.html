@@ -1,0 +1,23 @@
+<div class="cube" aria-hidden="true">
+  <div class="cube__prism">
+    @for (face of faces(); track face.title) {
+      <div
+        class="cube__face"
+        [style.transform]="'rotateY(' + face.angle + 'deg) translateZ(' + apothem() + 'px)'"
+      >
+        <h3 class="cube__title">{{ face.title }}</h3>
+        <ul class="cube__list">
+          @for (skill of face.skills; track skill) {
+            <li>{{ skill }}</li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</div>
+<p class="cube__hint text-body-secondary small">
+  <span>Drag to rotate</span>
+  <button type="button" class="cube__reset" aria-label="Reset cube rotation" (click)="reset()">
+    ↺ Reset
+  </button>
+</p>

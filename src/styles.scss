@@ -59,3 +59,33 @@ html {
 ::view-transition-new(root) {
   z-index: 1;
 }
+
+.tilt {
+  position: relative;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.25s ease-out;
+  will-change: transform;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+    background: radial-gradient(
+      circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgb(255 255 255 / 18%),
+      transparent 55%
+    );
+  }
+
+  &--active {
+    transition: transform 0.08s linear;
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
