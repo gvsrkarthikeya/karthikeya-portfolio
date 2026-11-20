@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Reveal } from '../../../shared/directives/reveal';
 import { Experience as ExperienceEntry } from '../../../models';
 import { formatYearMonth } from '../../../shared/utils/format-year-month';
 
 @Component({
+  imports: [Reveal],
   selector: 'app-experience',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './experience.html',

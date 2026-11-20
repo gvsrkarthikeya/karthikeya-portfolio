@@ -1,13 +1,35 @@
 <section id="skills" class="section py-5" aria-labelledby="skills-heading">
-  <h2 id="skills-heading" class="h3 fw-bold mb-4">Skills</h2>
-  <div class="row g-3">
+  <h2 id="skills-heading" class="h3 fw-bold mb-3" appReveal>Skills</h2>
+  <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Filter skills by category">
+    <button
+      type="button"
+      class="skills__filter"
+      [class.skills__filter--active]="!selected()"
+      [attr.aria-pressed]="!selected()"
+      (click)="select(null)"
+    >
+      All
+    </button>
     @for (group of groups(); track group.title) {
+      <button
+        type="button"
+        class="skills__filter"
+        [class.skills__filter--active]="selected() === group.title"
+        [attr.aria-pressed]="selected() === group.title"
+        (click)="select(group.title)"
+      >
+        {{ group.title }}
+      </button>
+    }
+  </div>
+  <div class="row g-3">
+    @for (group of visibleGroups(); track group.title) {
       <div class="col-12 col-md-6">
-        <div class="skills__group h-100 p-3">
+        <div class="skills__group h-100 p-3" appReveal>
           <h3 class="h6 text-uppercase text-body-secondary mb-3">{{ group.title }}</h3>
           <ul class="list-unstyled d-flex flex-wrap gap-2 mb-0">
-            @for (skill of group.skills; track skill.name) {
-              <li class="skills__tag">{{ skill.name }}</li>
+            @for (skill of group.skills; track skill.name; let i = $index) {
+              <li class="skills__tag" [style.animation-delay]="i * 40 + 'ms'">{{ skill.name }}</li>
             }
           </ul>
         </div>
