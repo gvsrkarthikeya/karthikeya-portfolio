@@ -1,0 +1,70 @@
+<div class="lab__panel h-100 p-3">
+  <h3 class="h6 text-uppercase text-body-secondary mb-3">Easing curve editor</h3>
+  <div class="d-flex flex-wrap gap-1 mb-2" role="group" aria-label="Easing presets">
+    @for (preset of presets; track preset.name) {
+      <button
+        type="button"
+        class="ease__preset"
+        [class.ease__preset--active]="isPreset(preset.value)"
+        [attr.aria-pressed]="isPreset(preset.value)"
+        (click)="setPreset(preset.value)"
+      >
+        {{ preset.name }}
+      </button>
+    }
+  </div>
+  <svg
+    class="ease__svg"
+    viewBox="0 -50 240 380"
+    role="group"
+    aria-label="Cubic bezier editor. Drag the two handles, or focus one and use arrow keys."
+  >
+    <rect x="40" y="60" width="160" height="160" class="ease__box" />
+    <line x1="40" y1="220" [attr.x2]="p1().x" [attr.y2]="p1().y" class="ease__arm" />
+    <line x1="200" y1="60" [attr.x2]="p2().x" [attr.y2]="p2().y" class="ease__arm" />
+    <path [attr.d]="path()" class="ease__curve" />
+    <circle
+      class="ease__handle"
+      r="9"
+      tabindex="0"
+      role="slider"
+      aria-label="Control point 1"
+      aria-valuemin="0"
+      aria-valuemax="1"
+      [attr.aria-valuenow]="bezier()[0]"
+      [attr.aria-valuetext]="'x ' + bezier()[0].toFixed(2) + ', y ' + bezier()[1].toFixed(2)"
+      [attr.cx]="p1().x"
+      [attr.cy]="p1().y"
+      (pointerdown)="drag(0, $event)"
+      (keydown)="nudge(0, $event)"
+    />
+    <circle
+      class="ease__handle"
+      r="9"
+      tabindex="0"
+      role="slider"
+      aria-label="Control point 2"
+      aria-valuemin="0"
+      aria-valuemax="1"
+      [attr.aria-valuenow]="bezier()[2]"
+      [attr.aria-valuetext]="'x ' + bezier()[2].toFixed(2) + ', y ' + bezier()[3].toFixed(2)"
+      [attr.cx]="p2().x"
+      [attr.cy]="p2().y"
+      (pointerdown)="drag(1, $event)"
+      (keydown)="nudge(1, $event)"
+    />
+  </svg>
+  <div class="ease__track my-3" aria-hidden="true">
+    <div
+      class="ease__ball"
+      [class.ease__ball--end]="atEnd()"
+      [style.transition-timing-function]="css()"
+    ></div>
+  </div>
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    <button type="button" class="btn btn-sm btn-primary" (click)="play()">Play</button>
+    <code class="ease__code">{{ css() }}</code>
+    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="copy()">Copy</button>
+  </div>
+  <p class="small text-body-secondary mt-2 mb-0" role="status">{{ status() }}</p>
+</div>

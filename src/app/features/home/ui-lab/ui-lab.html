@@ -1,0 +1,63 @@
+<section id="ui-lab" class="section py-5" aria-labelledby="ui-lab-heading">
+  <h2 id="ui-lab-heading" class="h3 fw-bold mb-2" appReveal>UI Lab</h2>
+  <p class="text-body-secondary mb-4" appReveal>
+    Small live demos built with Angular signals and CSS custom properties.
+  </p>
+  <div class="row g-3">
+    <div class="col-12 col-lg-7" appReveal>
+      <div class="lab__panel h-100 p-3">
+        <h3 class="h6 text-uppercase text-body-secondary mb-3">Design-token playground</h3>
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-6">
+            <label class="form-label small mb-0" for="lab-hue">Hue: {{ hue() }}°</label>
+            <input
+              id="lab-hue"
+              type="range"
+              class="form-range"
+              min="0"
+              max="360"
+              [value]="hue()"
+              (input)="set('hue', $event)"
+            />
+            <label class="form-label small mb-0" for="lab-radius">Radius: {{ radius() }}px</label>
+            <input
+              id="lab-radius"
+              type="range"
+              class="form-range"
+              min="0"
+              max="32"
+              [value]="radius()"
+              (input)="set('radius', $event)"
+            />
+            <label class="form-label small mb-0" for="lab-shadow">Shadow: {{ shadow() }}px</label>
+            <input
+              id="lab-shadow"
+              type="range"
+              class="form-range"
+              min="0"
+              max="40"
+              [value]="shadow()"
+              (input)="set('shadow', $event)"
+            />
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-1" (click)="reset()">
+              Reset
+            </button>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="lab__preview" [style]="previewStyle()">
+              <strong>Live preview</strong>
+              <p class="small mb-2">Tokens update this card instantly.</p>
+              <button type="button" class="lab__preview-btn">Action</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5" appReveal="120">
+      <app-easing-editor />
+    </div>
+    <div class="col-12" appReveal>
+      <app-component-gallery />
+    </div>
+  </div>
+</section>

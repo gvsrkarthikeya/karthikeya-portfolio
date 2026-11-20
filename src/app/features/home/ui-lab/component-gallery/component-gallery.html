@@ -1,0 +1,144 @@
+<div class="lab__panel p-3">
+  <h3 class="h6 text-uppercase text-body-secondary mb-3">Accessible component gallery</h3>
+  <div class="row g-4">
+    <div class="col-12 col-lg-6">
+      <h4 class="h6">Tabs</h4>
+      <div
+        #tablist
+        role="tablist"
+        aria-label="Accessibility notes"
+        class="d-flex gap-1 mb-2"
+        (keydown)="onTabKeydown($event)"
+      >
+        @for (tab of tabs; track tab.id; let i = $index) {
+          <button
+            type="button"
+            role="tab"
+            class="gal__tab"
+            [class.gal__tab--active]="activeTab() === i"
+            [id]="'gal-tab-' + tab.id"
+            [attr.aria-selected]="activeTab() === i"
+            [attr.aria-controls]="'gal-panel-' + tab.id"
+            [attr.tabindex]="activeTab() === i ? 0 : -1"
+            (click)="activeTab.set(i)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+      @for (tab of tabs; track tab.id; let i = $index) {
+        <div
+          role="tabpanel"
+          class="small"
+          [id]="'gal-panel-' + tab.id"
+          [attr.aria-labelledby]="'gal-tab-' + tab.id"
+          [hidden]="activeTab() !== i"
+          tabindex="0"
+        >
+          {{ tab.body }}
+        </div>
+      }
+
+      <h4 class="h6 mt-4">Accordion</h4>
+      @for (item of faq; track item.q; let i = $index) {
+        <div class="gal__item">
+          <h5 class="h6 m-0">
+            <button
+              type="button"
+              class="gal__trigger"
+              [attr.aria-expanded]="openItem() === i"
+              [attr.aria-controls]="'gal-acc-' + i"
+              [id]="'gal-acc-btn-' + i"
+              (click)="toggleItem(i)"
+            >
+              {{ item.q }}<span aria-hidden="true">{{ openItem() === i ? '−' : '+' }}</span>
+            </button>
+          </h5>
+          <div
+            role="region"
+            class="small gal__body"
+            [id]="'gal-acc-' + i"
+            [attr.aria-labelledby]="'gal-acc-btn-' + i"
+            [hidden]="openItem() !== i"
+          >
+            {{ item.a }}
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <h4 class="h6">Modal, tooltip and toast</h4>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-primary" (click)="openModal($event)">
+          Open modal
+        </button>
+        <span class="gal__tipwrap">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            aria-describedby="gal-tip"
+            (mouseenter)="tipOpen.set(true)"
+            (mouseleave)="tipOpen.set(false)"
+            (focus)="tipOpen.set(true)"
+            (blur)="tipOpen.set(false)"
+            (keydown.escape)="tipOpen.set(false)"
+          >
+            Hover or focus me
+          </button>
+          <span id="gal-tip" role="tooltip" class="gal__tip" [class.gal__tip--show]="tipOpen()"
+            >Shown on hover and keyboard focus</span
+          >
+        </span>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          (click)="showToast('Saved successfully')"
+        >
+          Show toast
+        </button>
+      </div>
+      <p class="small text-body-secondary mt-3">
+        Try it with the keyboard only: Tab to a control, Enter to activate, Esc to close.
+      </p>
+    </div>
+  </div>
+</div>
+
+@if (modalOpen()) {
+  <div class="gal__backdrop" (click)="closeModal()">
+    <div
+      #modal
+      class="gal__modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="gal-modal-title"
+      (click)="$event.stopPropagation()"
+      (keydown)="onModalKeydown($event)"
+    >
+      <h4 id="gal-modal-title" class="h5">Focus-trapped modal</h4>
+      <p class="small">
+        Tab cycles inside this dialog, Esc closes it, and focus returns to the button that opened
+        it.
+      </p>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="closeModal()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="closeModal(); showToast('Confirmed')"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="gal__toasts" role="status" aria-live="polite">
+  @if (toast()) {
+    <div class="gal__toast">{{ toast() }}</div>
+  }
+</div>

@@ -1,0 +1,87 @@
+.lab__panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.ease__preset {
+  padding: 0.15rem 0.55rem;
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+
+  &--active {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+.ease__svg {
+  width: 100%;
+  max-width: 17rem;
+  touch-action: none;
+}
+
+.ease__box {
+  fill: var(--color-surface-raised);
+  stroke: var(--color-border);
+}
+.ease__arm {
+  stroke: var(--color-text-muted);
+  stroke-dasharray: 3 3;
+}
+.ease__curve {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 3;
+}
+
+.ease__handle {
+  fill: var(--color-accent);
+  stroke: var(--color-surface);
+  stroke-width: 2;
+  cursor: grab;
+
+  &:focus-visible {
+    outline: var(--focus-ring);
+  }
+}
+
+.ease__track {
+  position: relative;
+  height: 1.5rem;
+  background: var(--color-surface-raised);
+  border-radius: 999px;
+}
+
+.ease__ball {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--color-primary);
+  border-radius: 50%;
+  transition: left 1s;
+
+  &--end {
+    left: calc(100% - 1.5rem);
+  }
+}
+
+.ease__code {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ease__ball {
+    transition: none;
+  }
+}

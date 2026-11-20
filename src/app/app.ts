@@ -7,6 +7,7 @@ import { Education } from './features/home/education/education';
 import { Experience } from './features/home/experience/experience';
 import { Hero } from './features/home/hero/hero';
 import { Projects } from './features/home/projects/projects';
+import { UiLab } from './features/home/ui-lab/ui-lab';
 import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
 import { BackToTop } from './shared/components/back-to-top/back-to-top';
@@ -26,6 +27,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
     Experience,
     Skills,
     Projects,
+    UiLab,
     Education,
     Contact,
     SiteFooter,
@@ -53,6 +55,7 @@ export class App {
     { label: 'Experience', fragment: 'experience' },
     { label: 'Skills', fragment: 'skills' },
     { label: 'Projects', fragment: 'projects' },
+    { label: 'UI Lab', fragment: 'ui-lab' },
     { label: 'Education', fragment: 'education' },
     { label: 'Contact', fragment: 'contact' },
   ];
