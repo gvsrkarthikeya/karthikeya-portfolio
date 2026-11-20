@@ -31,6 +31,8 @@ jobs:
         env:
           GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
       - run: npm run build -- --configuration production --base-href /karthikeya-portfolio/
+      # Pages has no SPA fallback; serving index.html as 404.html makes deep links like /github work.
+      - run: cp dist/karthikeya-portfolio/browser/index.html dist/karthikeya-portfolio/browser/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/karthikeya-portfolio/browser
