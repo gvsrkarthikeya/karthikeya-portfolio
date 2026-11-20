@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/c
 import { Reveal } from '../../../shared/directives/reveal';
 import { ComponentGallery } from './component-gallery/component-gallery';
 import { EasingEditor } from './easing-editor/easing-editor';
+import { UiBuilder } from './ui-builder/ui-builder';
 
 @Component({
   selector: 'app-ui-lab',
-  imports: [Reveal, EasingEditor, ComponentGallery],
+  imports: [Reveal, EasingEditor, ComponentGallery, UiBuilder],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ui-lab.html',
   styleUrl: './ui-lab.scss',

@@ -57,6 +57,13 @@
       <app-easing-editor />
     </div>
     <div class="col-12" appReveal>
+      @defer (on viewport) {
+        <app-ui-builder />
+      } @placeholder {
+        <div class="lab__panel lab__placeholder p-3" aria-hidden="true"></div>
+      }
+    </div>
+    <div class="col-12" appReveal>
       <app-component-gallery />
     </div>
   </div>
