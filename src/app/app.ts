@@ -55,6 +55,14 @@ export class App {
 
   protected readonly shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
 
+  protected toggleTheme(): void {
+    const active = document.activeElement;
+    const box = active instanceof HTMLElement ? active.getBoundingClientRect() : undefined;
+    this.appearance.toggleColorTheme(
+      box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : undefined,
+    );
+  }
+
   /** Add an entry here as each section ships. */
   protected readonly navItems: NavItem[] = [
     { label: 'About', fragment: 'about' },

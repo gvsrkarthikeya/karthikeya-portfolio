@@ -24,9 +24,14 @@
         <ul class="navbar-nav">
           @for (item of navItems(); track item.fragment) {
             <li class="nav-item">
-              <a class="nav-link" [href]="'#' + item.fragment" (click)="closeMenu()">{{
-                item.label
-              }}</a>
+              <a
+                class="nav-link"
+                [class.active]="activeSection() === item.fragment"
+                [attr.aria-current]="activeSection() === item.fragment ? 'location' : null"
+                [href]="'#' + item.fragment"
+                (click)="closeMenu()"
+                >{{ item.label }}</a
+              >
             </li>
           }
         </ul>
