@@ -17,7 +17,8 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
 
 @Injectable({ providedIn: 'root' })
 export class AppearanceService {
-  private readonly root = inject(DOCUMENT).documentElement;
+  private readonly document = inject(DOCUMENT);
+  private readonly root = this.document.documentElement;
   private readonly style = signal<DesignStyle>(DEFAULT_APPEARANCE.designStyle);
   private readonly theme = signal<ColorTheme>(DEFAULT_APPEARANCE.colorTheme);
 
@@ -47,8 +48,38 @@ export class AppearanceService {
     this.commit();
   }
 
-  toggleColorTheme(): void {
-    this.setColorTheme(this.theme() === 'dark' ? 'light' : 'dark');
+  /**
+   * Flips the theme. Where the View Transitions API exists and motion is allowed,
+   * the new theme is revealed as a circle growing from `origin` (viewport px).
+   */
+  toggleColorTheme(origin?: { x: number; y: number }): void {
+    const next: ColorTheme = this.theme() === 'dark' ? 'light' : 'dark';
+    const doc = this.document as Document & {
+      startViewTransition?: (update: () => void) => { ready: Promise<void> };
+    };
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+    if (!doc.startViewTransition || reduced) {
+      this.setColorTheme(next);
+      return;
+    }
+
+    const x = origin?.x ?? window.innerWidth / 2;
+    const y = origin?.y ?? window.innerHeight / 2;
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+
+    const transition = doc.startViewTransition(() => this.setColorTheme(next));
+    transition.ready
+      .then(() =>
+        this.root.animate(
+          { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 500, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' },
+        ),
+      )
+      .catch(() => undefined);
   }
 
   private commit(): void {
