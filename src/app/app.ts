@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommandPaletteService } from './core/services/command-palette.service';
 import { AppearanceService } from './core/services/appearance.service';
 import { PortfolioDataService } from './core/services/portfolio-data.service';
 import { About } from './features/home/about/about';
@@ -12,6 +13,7 @@ import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
 import { BackToTop } from './shared/components/back-to-top/back-to-top';
 import { ScrollProgress } from './shared/components/scroll-progress/scroll-progress';
+import { CommandPalette } from './shared/components/command-palette/command-palette';
 import { SiteFooter } from './shared/components/site-footer/site-footer';
 import { StyleSelector } from './shared/components/style-selector/style-selector';
 import { ThemeToggle } from './shared/components/theme-toggle/theme-toggle';
@@ -33,6 +35,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
     SiteFooter,
     BackToTop,
     ScrollProgress,
+    CommandPalette,
   ],
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +44,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
 })
 export class App {
   protected readonly appearance = inject(AppearanceService);
+  protected readonly palette = inject(CommandPaletteService);
   private readonly content = inject(PortfolioDataService).content;
   protected readonly profile = this.content.profile;
   protected readonly experience = this.content.experience;
@@ -48,6 +52,8 @@ export class App {
   protected readonly projects = this.content.projects;
   protected readonly education = this.content.education;
   protected readonly certifications = this.content.certifications;
+
+  protected readonly shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
 
   /** Add an entry here as each section ships. */
   protected readonly navItems: NavItem[] = [
