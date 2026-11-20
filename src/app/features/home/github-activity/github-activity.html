@@ -76,6 +76,11 @@
                         >· {{ activity.commits }} commits in the last 12 weeks</span
                       >
                     </h3>
+                    @if (s.includesPrivate) {
+                      <p class="small text-body-secondary">
+                        Includes private repositories (counts only, names not shown).
+                      </p>
+                    }
                     <div
                       class="gh__map"
                       role="img"
