@@ -50,7 +50,27 @@ export type GithubState =
       languages: LanguageShare[];
       /** Absent when the events endpoint is unavailable. */
       activity?: GithubActivityData;
+      /** True when counts from private repositories are folded into activity and languages. */
+      includesPrivate?: boolean;
     };
+
+/** Aggregate-only data generated at build time from private repos; never contains repo names. */
+export interface PrivateStats {
+  languages: Record<string, number>;
+  commits: string[];
+}
+
+export function parsePrivateStats(raw: unknown): PrivateStats | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const { languages, commits } = raw as Partial<PrivateStats>;
+  if (!languages || typeof languages !== 'object' || !Array.isArray(commits)) return null;
+  return {
+    languages: Object.fromEntries(
+      Object.entries(languages).filter(([, n]) => typeof n === 'number' && n > 0),
+    ),
+    commits: commits.filter((d): d is string => typeof d === 'string'),
+  };
+}
 
 const WEEKS = 12;
 const DAY_MS = 86_400_000;
@@ -176,11 +196,14 @@ export class GithubService {
       }));
       const stars = owned.reduce((sum, r) => sum + Number(r['stargazers_count'] ?? 0), 0);
 
+      const priv = await this.fetchPrivateStats();
       let activity: GithubActivityData | undefined;
       try {
         const events = eventsRes?.ok ? ((await eventsRes.json()) as RawEvent[]) : [];
         const commitDates = await this.fetchCommitDates(username, owned);
-        if (commitDates) activity = buildActivity(events, commitDates);
+        if (commitDates || priv) {
+          activity = buildActivity(events, [...(commitDates ?? []), ...(priv?.commits ?? [])]);
+        }
       } catch {
         // Activity is optional; the rest of the section still renders.
       }
@@ -194,15 +217,29 @@ export class GithubService {
         },
         repos,
         stars,
-        languages: buildLanguages(
-          owned.map((r) => ({ language: (r['language'] as string | null) ?? null })),
-        ),
+        languages: buildLanguages([
+          ...owned.map((r) => ({ language: (r['language'] as string | null) ?? null })),
+          ...Object.entries(priv?.languages ?? {}).flatMap(([language, n]) =>
+            Array.from({ length: n }, () => ({ language })),
+          ),
+        ]),
         activity,
+        includesPrivate: !!priv,
       };
       this.current.set(state);
       this.writeCache(username, state);
     } catch {
       this.current.set({ status: 'error' });
+    }
+  }
+
+  /** Same-origin file written at build time; absent (or not JSON) when no token was configured. */
+  private async fetchPrivateStats(): Promise<PrivateStats | null> {
+    try {
+      const res = await fetch('github-private.json');
+      return res.ok ? parsePrivateStats(await res.json()) : null;
+    } catch {
+      return null;
     }
   }
 
@@ -238,7 +275,7 @@ export class GithubService {
 
   private readCache(username: string): GithubState | null {
     try {
-      const raw = sessionStorage.getItem(`portfolio.github.v3.${username}`);
+      const raw = sessionStorage.getItem(`portfolio.github.v4.${username}`);
       if (!raw) return null;
       const { at, state } = JSON.parse(raw) as { at: number; state: GithubState };
       return Date.now() - at < CACHE_TTL_MS ? state : null;
@@ -250,7 +287,7 @@ export class GithubService {
   private writeCache(username: string, state: GithubState): void {
     try {
       sessionStorage.setItem(
-        `portfolio.github.v3.${username}`,
+        `portfolio.github.v4.${username}`,
         JSON.stringify({ at: Date.now(), state }),
       );
     } catch {

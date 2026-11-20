@@ -59,6 +59,47 @@ describe('GithubService', () => {
   });
 });
 
+describe('private stats', () => {
+  beforeEach(() => sessionStorage.clear());
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('parses only well-formed aggregate data', async () => {
+    const { parsePrivateStats } = await import('./github.service');
+    expect(parsePrivateStats('<html>')).toBeNull();
+    expect(parsePrivateStats({ languages: {}, commits: 'x' })).toBeNull();
+    expect(
+      parsePrivateStats({ languages: { Go: 2, Bad: 'x' }, commits: ['2026-01-01', 5] }),
+    ).toEqual({ languages: { Go: 2 }, commits: ['2026-01-01'] });
+  });
+
+  it('folds private commits and languages into the insights', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const ok = (body: unknown) => ({ ok: true, status: 200, json: async () => body });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) =>
+        Promise.resolve(
+          url === 'github-private.json'
+            ? ok({ languages: { Go: 2 }, commits: [today, today, today] })
+            : url.includes('/repos?') || url.includes('/events')
+              ? ok([])
+              : ok({ public_repos: 0, followers: 0 }),
+        ),
+      ),
+    );
+    const { GithubService } = await import('./github.service');
+    const service = TestBed.inject(GithubService);
+    await service.load('someone');
+    const state = service.state();
+    expect(state.status).toBe('ready');
+    if (state.status === 'ready') {
+      expect(state.includesPrivate).toBe(true);
+      expect(state.activity?.commits).toBe(3);
+      expect(state.languages).toEqual([{ name: 'Go', repos: 2, percent: 100 }]);
+    }
+  });
+});
+
 describe('GitHub insight helpers', () => {
   it('computes language share by repo count, largest first', async () => {
     const { buildLanguages } = await import('./github.service');
