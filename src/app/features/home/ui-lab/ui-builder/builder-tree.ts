@@ -85,7 +85,7 @@ export const NODE_DEFS: Record<NodeType, NodeDef> = {
     props: [
       select('direction', 'Direction', ['column', 'row']),
       num('gap', 'Gap', 0, 48, 16),
-      select('align', 'Align', ['stretch', 'start', 'center', 'end']),
+      select('align', 'Align', ['start', 'center', 'end', 'stretch']),
       select('justify', 'Justify', ['start', 'center', 'end', 'between']),
       toggle('wrap', 'Wrap'),
     ],
