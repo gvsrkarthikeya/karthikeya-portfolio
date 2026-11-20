@@ -1,16 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { CommandPaletteService } from './core/services/command-palette.service';
 import { AppearanceService } from './core/services/appearance.service';
 import { PortfolioDataService } from './core/services/portfolio-data.service';
-import { About } from './features/home/about/about';
-import { Contact } from './features/home/contact/contact';
-import { Education } from './features/home/education/education';
-import { Experience } from './features/home/experience/experience';
-import { Hero } from './features/home/hero/hero';
-import { Projects } from './features/home/projects/projects';
-import { GithubActivity } from './features/home/github-activity/github-activity';
-import { UiLab } from './features/home/ui-lab/ui-lab';
-import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
 import { BackToTop } from './shared/components/back-to-top/back-to-top';
 import { ScrollProgress } from './shared/components/scroll-progress/scroll-progress';
@@ -25,15 +17,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
     SiteHeader,
     StyleSelector,
     ThemeToggle,
-    Hero,
-    About,
-    Experience,
-    Skills,
-    Projects,
-    UiLab,
-    GithubActivity,
-    Education,
-    Contact,
+    RouterOutlet,
     SiteFooter,
     BackToTop,
     ScrollProgress,
@@ -47,16 +31,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
 export class App {
   protected readonly appearance = inject(AppearanceService);
   protected readonly palette = inject(CommandPaletteService);
-  private readonly content = inject(PortfolioDataService).content;
-  protected readonly profile = this.content.profile;
-  protected readonly experience = this.content.experience;
-  protected readonly skillGroups = this.content.skillGroups;
-  protected readonly projects = this.content.projects;
-  protected readonly education = this.content.education;
-  protected readonly certifications = this.content.certifications;
-
-  protected readonly githubUrl = this.profile.socialLinks.find((link) => link.kind === 'github')
-    ?.url;
+  protected readonly profile = inject(PortfolioDataService).content.profile;
 
   protected readonly shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
 
@@ -68,14 +43,27 @@ export class App {
     );
   }
 
-  /** Add an entry here as each section ships. */
+  /** Header links: home sections first, then the separate pages. */
   protected readonly navItems: NavItem[] = [
-    { label: 'About', fragment: 'about' },
-    { label: 'Experience', fragment: 'experience' },
-    { label: 'Skills', fragment: 'skills' },
-    { label: 'Projects', fragment: 'projects' },
-    { label: 'UI Lab', fragment: 'ui-lab' },
-    { label: 'Education', fragment: 'education' },
-    { label: 'Contact', fragment: 'contact' },
+    { label: 'About', path: '', fragment: 'about' },
+    { label: 'Experience', path: '', fragment: 'experience' },
+    { label: 'Skills', path: '', fragment: 'skills' },
+    { label: 'Projects', path: '', fragment: 'projects' },
+    { label: 'Contact', path: '', fragment: 'contact' },
+    { label: 'GitHub', path: 'github' },
+    { label: 'UI Lab', path: 'lab' },
   ];
+
+  /** The palette also reaches sections that are left out of the header to keep it tidy. */
+  protected readonly paletteItems: NavItem[] = [
+    ...this.navItems.slice(0, 4),
+    { label: 'Education', path: '', fragment: 'education' },
+    ...this.navItems.slice(4),
+  ];
+
+  protected skipToMain(event: Event): void {
+    // A bare "#id" href would resolve against <base href="/"> and reload the home page.
+    event.preventDefault();
+    document.getElementById('main-content')?.focus();
+  }
 }

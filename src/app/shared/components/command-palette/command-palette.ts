@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,6 +35,7 @@ export class CommandPalette {
 
   protected readonly palette = inject(CommandPaletteService);
   private readonly appearance = inject(AppearanceService);
+  private readonly router = inject(Router);
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('search');
 
   protected readonly query = signal('');
@@ -42,19 +44,17 @@ export class CommandPalette {
 
   private readonly commands = computed<PaletteCommand[]>(() => {
     const profile = this.profile();
-    const go = (id: string): void => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      history.replaceState(null, '', `#${id}`);
-    };
+    const go = (path: string, fragment?: string): void =>
+      void this.router.navigate(['/' + path], { fragment });
     const open = (url: string): void => void window.open(url, '_blank', 'noopener');
 
     const commands: PaletteCommand[] = [
-      { id: 'nav-home', label: 'Go to Home', group: 'Navigate', run: () => go('home') },
+      { id: 'nav-home', label: 'Go to Home', group: 'Navigate', run: () => go('') },
       ...this.navItems().map<PaletteCommand>((item) => ({
-        id: `nav-${item.fragment}`,
+        id: `nav-${item.fragment ?? item.path}`,
         label: `Go to ${item.label}`,
         group: 'Navigate',
-        run: () => go(item.fragment),
+        run: () => go(item.path, item.fragment),
       })),
       {
         id: 'theme',

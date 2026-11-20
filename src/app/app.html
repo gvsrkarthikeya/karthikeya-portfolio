@@ -1,5 +1,7 @@
 <app-scroll-progress />
-<a class="skip-link visually-hidden-focusable" href="#main-content">Skip to main content</a>
+<a class="skip-link visually-hidden-focusable" href="#main-content" (click)="skipToMain($event)"
+  >Skip to main content</a
+>
 <app-site-header [brand]="profile.displayName" [navItems]="navItems">
   <button
     type="button"
@@ -17,18 +19,8 @@
   <app-theme-toggle headerAction [theme]="appearance.colorTheme()" (toggled)="toggleTheme()" />
 </app-site-header>
 <main id="main-content" class="app-shell container" tabindex="-1">
-  <app-hero [profile]="profile" />
-  <app-about [experience]="experience" [skillGroups]="skillGroups" />
-  <app-experience [entries]="experience" />
-  <app-skills [groups]="skillGroups" />
-  <app-projects [projects]="projects" />
-  <app-ui-lab />
-  @if (githubUrl; as url) {
-    <app-github-activity [profileUrl]="url" />
-  }
-  <app-education [entries]="education" [certifications]="certifications" />
-  <app-contact [profile]="profile" />
+  <router-outlet />
 </main>
 <app-site-footer [ownerName]="profile.displayName" />
 <app-back-to-top />
-<app-command-palette [navItems]="navItems" [profile]="profile" />
+<app-command-palette [navItems]="paletteItems" [profile]="profile" />
