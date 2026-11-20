@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.cube {
+  height: 18.5rem;
+  perspective: 900px;
+  display: grid;
+  place-items: center;
+}
+
+.cube__prism {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  transform-style: preserve-3d;
+}
+
+.cube__face {
+  position: absolute;
+  inset: 0;
+  padding: 1rem;
+  text-align: left;
+  backface-visibility: hidden;
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.cube__title {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.cube__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+
+  li {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.8rem;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+  }
+}
+
+.cube__hint {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cube__reset {
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-raised);
+  }
+}
+
+@media (hover: none) {
+  .cube__hint span {
+    display: none;
+  }
+}

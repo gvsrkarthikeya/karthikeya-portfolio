@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { SkillGroup } from '../../../models';
 import { Reveal } from '../../../shared/directives/reveal';
+import { TechCube } from './tech-cube/tech-cube';
 
 @Component({
   selector: 'app-skills',
-  imports: [Reveal],
+  imports: [Reveal, TechCube],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './skills.html',
   styleUrl: './skills.scss',
