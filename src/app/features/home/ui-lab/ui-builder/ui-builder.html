@@ -47,14 +47,153 @@
         }
       </ul>
 
+      <h4 class="h6 mt-3" id="ub-layers-title">Layers</h4>
+      <ul class="ub__layers list-unstyled" role="tree" aria-labelledby="ub-layers-title">
+        @for (layer of layers(); track layer.id) {
+          <li
+            role="treeitem"
+            tabindex="0"
+            class="ub__layer"
+            [class.ub__layer--selected]="selectedId() === layer.id"
+            [attr.aria-level]="layer.level"
+            [attr.aria-selected]="selectedId() === layer.id"
+            [style.padding-left.rem]="0.5 + (layer.level - 1) * 0.9"
+            (click)="selectedId.set(layer.id)"
+            (keydown)="onLayerKey($event, layer.id)"
+          >
+            {{ layer.label }}
+          </li>
+        }
+      </ul>
+
       <h4 class="h6 mt-3">Properties</h4>
-      @if (selected()) {
-        <div class="ub__props">
-          <p class="small text-body-secondary mb-2">Editing: {{ selectedLabel() }}</p>
-        </div>
-      } @else {
-        <p class="small text-body-secondary">Select a component on the canvas to edit it.</p>
-      }
+      <div class="ub__props">
+        @if (selected()) {
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <p class="small text-body-secondary mb-0">Editing: {{ selectedLabel() }}</p>
+            <div class="d-flex gap-1">
+              <button
+                type="button"
+                class="ub__tool"
+                aria-label="Move up"
+                [disabled]="!position() || position()!.index === 0"
+                (click)="shift(-1)"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                class="ub__tool"
+                aria-label="Move down"
+                [disabled]="!position() || position()!.index === position()!.count - 1"
+                (click)="shift(1)"
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                class="ub__tool"
+                aria-label="Duplicate"
+                [disabled]="!position()"
+                (click)="duplicateSelected()"
+              >
+                ⧉
+              </button>
+              <button
+                type="button"
+                class="ub__tool"
+                aria-label="Delete"
+                [disabled]="!position()"
+                (click)="removeSelected()"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+          @for (field of schema(); track field.key) {
+            @switch (field.kind) {
+              @case ('toggle') {
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="form-label small mb-0" [id]="'ub-prop-' + field.key + '-label'">{{
+                    field.label
+                  }}</span>
+                  <button
+                    type="button"
+                    role="switch"
+                    class="ub__switch"
+                    [attr.data-prop]="field.key"
+                    [attr.aria-checked]="value(field.key) === true"
+                    [attr.aria-labelledby]="'ub-prop-' + field.key + '-label'"
+                    (click)="setProp(field, value(field.key) !== true)"
+                  ></button>
+                </div>
+              }
+              @case ('select') {
+                <label class="form-label small mb-0" [for]="'ub-prop-' + field.key">{{
+                  field.label
+                }}</label>
+                <select
+                  class="form-select form-select-sm mb-2"
+                  [id]="'ub-prop-' + field.key"
+                  [attr.data-prop]="field.key"
+                  (change)="setProp(field, $any($event.target).value)"
+                >
+                  @for (option of field.options; track option) {
+                    <option [value]="option" [selected]="value(field.key) === option">
+                      {{ option }}
+                    </option>
+                  }
+                </select>
+              }
+              @case ('textarea') {
+                <label class="form-label small mb-0" [for]="'ub-prop-' + field.key">{{
+                  field.label
+                }}</label>
+                <textarea
+                  class="form-control form-control-sm mb-2"
+                  rows="3"
+                  [id]="'ub-prop-' + field.key"
+                  [attr.data-prop]="field.key"
+                  [value]="value(field.key)"
+                  (input)="setProp(field, $any($event.target).value)"
+                ></textarea>
+              }
+              @case ('number') {
+                <label class="form-label small mb-0" [for]="'ub-prop-' + field.key">{{
+                  field.label
+                }}</label>
+                <input
+                  class="form-control form-control-sm mb-2"
+                  type="number"
+                  [id]="'ub-prop-' + field.key"
+                  [attr.data-prop]="field.key"
+                  [attr.min]="field.min"
+                  [attr.max]="field.max"
+                  [value]="value(field.key)"
+                  (input)="setProp(field, $any($event.target).value)"
+                />
+              }
+              @default {
+                <label class="form-label small mb-0" [for]="'ub-prop-' + field.key">{{
+                  field.label
+                }}</label>
+                <input
+                  class="form-control form-control-sm mb-2"
+                  type="text"
+                  [id]="'ub-prop-' + field.key"
+                  [attr.data-prop]="field.key"
+                  [value]="value(field.key)"
+                  (input)="setProp(field, $any($event.target).value)"
+                />
+              }
+            }
+          }
+        } @else {
+          <p class="small text-body-secondary mb-0">
+            Select a component on the canvas or in Layers to edit it.
+          </p>
+        }
+      </div>
     </div>
 
     <div class="col-12 col-lg-8">

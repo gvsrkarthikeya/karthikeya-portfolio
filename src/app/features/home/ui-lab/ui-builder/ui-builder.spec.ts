@@ -75,4 +75,102 @@ describe('UiBuilder', () => {
     await clickPalette('Pricing card');
     expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
+
+  describe('properties and layers', () => {
+    const control = (key: string) =>
+      el.querySelector<HTMLElement>(`.ub__props [data-prop="${key}"]`)!;
+    const press = async (label: string) => {
+      el.querySelector<HTMLElement>(`button[aria-label="${label}"]`)!.click();
+      await settle();
+    };
+
+    it('shows controls for exactly the button schema when a button is selected', async () => {
+      await clickNode('.ub-btn');
+      const keys = Array.from(el.querySelectorAll<HTMLElement>('.ub__props [data-prop]')).map(
+        (c) => c.dataset['prop'],
+      );
+      expect(keys).toEqual([
+        'label',
+        'variant',
+        'tone',
+        'size',
+        'fullWidth',
+        'disabled',
+        'icon',
+        'iconPosition',
+        'href',
+      ]);
+    });
+
+    it('renders toggles as switches and selects with their options', async () => {
+      await clickNode('.ub-btn');
+      expect(control('fullWidth').getAttribute('role')).toBe('switch');
+      expect(control('variant').querySelectorAll('option')).toHaveLength(4);
+    });
+
+    it('updates the exported class when the variant changes', async () => {
+      await clickNode('.ub-btn');
+      const select = control('variant') as HTMLSelectElement;
+      select.value = 'outline';
+      select.dispatchEvent(new Event('change'));
+      await settle();
+      expect(code()).toContain('ub-btn--outline');
+    });
+
+    it('updates text props as the user types', async () => {
+      await clickNode('h1');
+      const input = control('text') as HTMLInputElement;
+      input.value = 'Hello <b>';
+      input.dispatchEvent(new Event('input'));
+      await settle();
+      expect(page().querySelector('h1')?.textContent).toBe('Hello <b>');
+      expect(code()).toContain('Hello &lt;b&gt;');
+    });
+
+    it('lists layers with indentation levels and selects on click', async () => {
+      const items = Array.from(el.querySelectorAll<HTMLElement>('[role="tree"] [role="treeitem"]'));
+      expect(items).toHaveLength(5);
+      expect(items.map((i) => i.getAttribute('aria-level'))).toEqual(['1', '2', '3', '3', '3']);
+      items[2].click();
+      await settle();
+      expect(el.textContent).toContain('Editing: Heading');
+      expect(el.querySelectorAll('[role="treeitem"][aria-selected="true"]')).toHaveLength(1);
+    });
+
+    it('removing a selected container clears selection and drops its children', async () => {
+      await clickPalette('Card');
+      await clickPalette('Button');
+      await clickNode('.ub-card');
+      await press('Delete');
+      expect(page().querySelector('.ub-card')).toBeNull();
+      expect(page().querySelectorAll('.ub-btn')).toHaveLength(1);
+      expect(el.textContent).toContain('Select a component');
+    });
+
+    it('duplicates the selection as a sibling', async () => {
+      await clickNode('h1');
+      await press('Duplicate');
+      expect(page().querySelectorAll('h1')).toHaveLength(2);
+    });
+
+    it('moves the selection up and down among its siblings', async () => {
+      await clickNode('.ub-text');
+      await press('Move up');
+      const order = Array.from(page().querySelectorAll('.ub-stack > *')).map((n) => n.tagName);
+      expect(order).toEqual(['P', 'H1', 'BUTTON']);
+      await press('Move down');
+      await press('Move down');
+      expect(page().querySelector('.ub-stack')!.lastElementChild!.tagName).toBe('P');
+    });
+
+    it('does not offer delete, duplicate or move for the root', async () => {
+      el.querySelector<HTMLElement>('[role="treeitem"]')!.click();
+      await settle();
+      for (const label of ['Delete', 'Duplicate', 'Move up', 'Move down']) {
+        expect(el.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)!.disabled).toBe(
+          true,
+        );
+      }
+    });
+  });
 });
