@@ -1,11 +1,20 @@
-<section id="home" class="hero py-5" tabindex="-1" aria-labelledby="hero-heading">
+<section id="home" class="hero py-5 position-relative" tabindex="-1" aria-labelledby="hero-heading">
+  <div class="hero__bg" aria-hidden="true"></div>
   <div class="row align-items-center g-4 g-lg-5">
     <div class="col-12 col-md-auto">
-      <div class="hero__initials" aria-hidden="true">{{ initials() }}</div>
+      <div class="hero__tilt" (mousemove)="onTilt($event)" (mouseleave)="resetTilt()">
+        <div class="hero__initials" aria-hidden="true" [style.transform]="tilt()">
+          {{ initials() }}
+        </div>
+      </div>
     </div>
     <div class="col">
       <h1 id="hero-heading" class="display-5 fw-bold mb-2">{{ profile().displayName }}</h1>
-      <p class="hero__headline lead mb-3">{{ profile().headline }}</p>
+      <p class="hero__headline lead mb-1">{{ profile().headline }}</p>
+      <p class="hero__typed mb-3" aria-hidden="true">
+        <span class="hero__typed-prefix">Focused on </span><span>{{ typed() }}</span
+        ><span class="hero__caret"></span>
+      </p>
       <p class="hero__summary mb-4">{{ profile().summary }}</p>
       <div class="d-flex flex-wrap gap-2 hero__actions">
         @if (emailUrl(); as email) {

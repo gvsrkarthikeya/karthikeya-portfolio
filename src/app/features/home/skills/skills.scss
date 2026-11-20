@@ -13,3 +13,43 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
 }
+
+.skills__tag {
+  animation: skills-pop 0.35s ease-out backwards;
+  transition:
+    transform 0.15s,
+    background-color 0.15s;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+}
+
+.skills__filter {
+  padding: 0.25rem 0.8rem;
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+
+  &--active {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+@keyframes skills-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills__tag {
+    animation: none;
+    transition: none;
+  }
+}

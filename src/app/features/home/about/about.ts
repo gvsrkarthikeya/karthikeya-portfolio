@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Reveal } from '../../../shared/directives/reveal';
 import { Experience, SkillGroup } from '../../../models';
 import { formatYearMonth } from '../../../shared/utils/format-year-month';
 
@@ -10,6 +11,7 @@ interface Fact {
 const CORE_STACK_SIZE = 3;
 
 @Component({
+  imports: [Reveal],
   selector: 'app-about',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './about.html',

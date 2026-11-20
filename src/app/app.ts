@@ -10,6 +10,7 @@ import { Projects } from './features/home/projects/projects';
 import { Skills } from './features/home/skills/skills';
 import { NavItem } from './models';
 import { BackToTop } from './shared/components/back-to-top/back-to-top';
+import { ScrollProgress } from './shared/components/scroll-progress/scroll-progress';
 import { SiteFooter } from './shared/components/site-footer/site-footer';
 import { StyleSelector } from './shared/components/style-selector/style-selector';
 import { ThemeToggle } from './shared/components/theme-toggle/theme-toggle';
@@ -29,6 +30,7 @@ import { SiteHeader } from './shared/components/site-header/site-header';
     Contact,
     SiteFooter,
     BackToTop,
+    ScrollProgress,
   ],
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
