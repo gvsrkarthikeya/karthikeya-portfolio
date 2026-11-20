@@ -1,0 +1,48 @@
+@if (palette.open()) {
+  <div class="palette__backdrop" (click)="close()">
+    <div
+      class="palette"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command palette"
+      (click)="$event.stopPropagation()"
+    >
+      <input
+        #search
+        class="palette__input"
+        type="text"
+        role="combobox"
+        placeholder="Type a command or search…"
+        aria-label="Search commands"
+        aria-autocomplete="list"
+        aria-controls="palette-list"
+        aria-expanded="true"
+        [attr.aria-activedescendant]="results().length ? 'palette-opt-' + activeIndex() : null"
+        [value]="query()"
+        (input)="onInput($event)"
+        (keydown)="onKeydown($event)"
+      />
+      <ul id="palette-list" class="palette__list" role="listbox" aria-label="Commands">
+        @for (command of results(); track command.id; let i = $index) {
+          <li
+            [id]="'palette-opt-' + i"
+            role="option"
+            class="palette__item"
+            [class.palette__item--active]="i === activeIndex()"
+            [attr.aria-selected]="i === activeIndex()"
+            (mousemove)="activeIndex.set(i)"
+            (click)="run(command)"
+          >
+            <span>{{ command.label }}</span>
+            <span class="palette__group">{{ command.group }}</span>
+          </li>
+        } @empty {
+          <li class="palette__empty" role="presentation">No matching commands</li>
+        }
+      </ul>
+      <div class="palette__footer" aria-hidden="true">
+        <kbd>↑</kbd><kbd>↓</kbd> navigate <kbd>Enter</kbd> run <kbd>Esc</kbd> close
+      </div>
+    </div>
+  </div>
+}

@@ -1,6 +1,15 @@
 <app-scroll-progress />
 <a class="skip-link visually-hidden-focusable" href="#main-content">Skip to main content</a>
 <app-site-header [brand]="profile.displayName" [navItems]="navItems">
+  <button
+    type="button"
+    class="btn btn-outline-secondary palette-trigger"
+    aria-label="Open command palette"
+    aria-haspopup="dialog"
+    (click)="palette.show()"
+  >
+    <span aria-hidden="true">⌕</span> <kbd>{{ shortcut }}</kbd>
+  </button>
   <app-style-selector
     [style]="appearance.designStyle()"
     (changed)="appearance.setDesignStyle($event)"
@@ -23,3 +32,4 @@
 </main>
 <app-site-footer [ownerName]="profile.displayName" />
 <app-back-to-top />
+<app-command-palette [navItems]="navItems" [profile]="profile" />
