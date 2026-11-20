@@ -117,6 +117,9 @@
 
 .ub__canvas {
   display: block;
+  max-width: 100%;
+  margin-inline: auto;
+  transition: width 0.2s;
   min-height: 14rem;
   padding: 0.5rem;
   background: var(--color-surface-raised);
@@ -151,6 +154,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ub__canvas,
   .ub__switch::after {
     transition: none;
   }

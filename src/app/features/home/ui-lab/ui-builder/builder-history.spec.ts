@@ -1,4 +1,4 @@
-import { commit, createHistory, redo, undo } from './builder-history';
+import { amend, commit, createHistory, redo, undo } from './builder-history';
 
 describe('builder history', () => {
   it('commits, undoes and redoes in sequence', () => {
@@ -37,5 +37,13 @@ describe('builder history', () => {
     const h = createHistory(0);
     expect(undo(h)).toBe(h);
     expect(redo(h)).toBe(h);
+  });
+
+  it('amends the present without adding an undo step', () => {
+    const h = commit(createHistory(0), 1);
+    const next = amend(h, 5);
+    expect(next.present).toBe(5);
+    expect(next.past).toEqual([0]);
+    expect(undo(next).present).toBe(0);
   });
 });

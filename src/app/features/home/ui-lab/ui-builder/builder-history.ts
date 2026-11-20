@@ -34,3 +34,8 @@ export function redo<T>(h: History<T>): History<T> {
     future: h.future.slice(1),
   };
 }
+
+/** Replaces the present in place, so a burst of edits (typing) stays one undo step. */
+export function amend<T>(h: History<T>, next: T): History<T> {
+  return next === h.present ? h : { ...h, present: next, future: [] };
+}

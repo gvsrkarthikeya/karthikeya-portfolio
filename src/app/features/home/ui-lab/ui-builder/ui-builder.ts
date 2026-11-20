@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, signal } from '@angular/core';
 import { EDITOR_CSS, EXPORT_CSS } from './builder-css';
 import { resolveDrop } from './builder-drop';
-import { History, commit, createHistory } from './builder-history';
+import { History, amend, commit, createHistory, redo, undo } from './builder-history';
 import { PRESETS, starterPage } from './builder-presets';
 import { renderPage } from './builder-render';
+import { STORAGE_KEY, deserialize, serialize } from './builder-storage';
 import {
   NODE_DEFS,
   NodeType,
@@ -45,6 +46,22 @@ interface DropBox {
   line: boolean;
 }
 
+const DEVICES = [
+  { id: 'desktop', label: 'Desktop', width: '100%' },
+  { id: 'tablet', label: 'Tablet', width: '768px' },
+  { id: 'mobile', label: 'Mobile', width: '375px' },
+] as const;
+
+type DeviceId = (typeof DEVICES)[number]['id'];
+
+function loadInitial(): UbNode {
+  try {
+    return deserialize(localStorage.getItem(STORAGE_KEY)) ?? starterPage();
+  } catch {
+    return starterPage();
+  }
+}
+
 const NODE_TYPES = Object.keys(NODE_DEFS) as NodeType[];
 
 /** Compose a page from nested components: drag or click to add, select to edit, export HTML/CSS. */
@@ -58,14 +75,34 @@ const NODE_TYPES = Object.keys(NODE_DEFS) as NodeType[];
 export class UiBuilder {
   protected readonly palette = NODE_TYPES.map((type) => ({ type, ...NODE_DEFS[type] }));
   protected readonly presets = PRESETS;
-  protected readonly history = signal<History<UbNode>>(createHistory(starterPage()));
+  protected readonly devices = DEVICES;
+  protected readonly device = signal<DeviceId>('desktop');
+  protected readonly deviceWidth = computed(
+    () => DEVICES.find((d) => d.id === this.device())?.width ?? '100%',
+  );
+  protected readonly history = signal<History<UbNode>>(createHistory(loadInitial()));
   protected readonly root = computed(() => this.history().present);
   protected readonly selectedId = signal<string | null>(null);
   protected readonly drop = signal<DropTarget | null>(null);
   protected readonly dropBox = signal<DropBox | null>(null);
   protected readonly exportTab = signal<'html' | 'css'>('html');
   protected readonly status = signal('');
+  protected readonly canUndo = computed(() => this.history().past.length > 0);
+  protected readonly canRedo = computed(() => this.history().future.length > 0);
   private dragging: DropPayload | null = null;
+  /** True while a burst of typing in one field is being folded into a single undo step. */
+  private editing = false;
+
+  constructor() {
+    effect(() => {
+      const json = serialize(this.root());
+      try {
+        localStorage.setItem(STORAGE_KEY, json);
+      } catch {
+        // Storage can be full or blocked; the builder still works without autosave.
+      }
+    });
+  }
 
   protected readonly selected = computed(() => {
     const id = this.selectedId();
@@ -164,7 +201,18 @@ export class UiBuilder {
       if (raw === '' || !Number.isFinite(n)) return;
       value = Math.min(schema.max ?? n, Math.max(schema.min ?? n, Math.round(n)));
     }
-    this.apply(updateProps(this.root(), id, { [schema.key]: value }));
+    const next = updateProps(this.root(), id, { [schema.key]: value });
+    const typed = schema.kind === 'text' || schema.kind === 'textarea' || schema.kind === 'number';
+    if (typed && this.editing) {
+      this.history.update((h) => amend(h, next));
+      return;
+    }
+    this.apply(next);
+    this.editing = typed;
+  }
+
+  protected beginEdit(): void {
+    this.editing = false;
   }
 
   protected removeSelected(): void {
@@ -208,7 +256,66 @@ export class UiBuilder {
   }
 
   private apply(next: UbNode): void {
+    this.editing = false;
     this.history.update((h) => commit(h, next));
+  }
+
+  protected undo(): void {
+    this.travel(undo, 'Undid last change.');
+  }
+
+  protected redo(): void {
+    this.travel(redo, 'Redid change.');
+  }
+
+  private travel(step: (h: History<UbNode>) => History<UbNode>, message: string): void {
+    const before = this.history();
+    const after = step(before);
+    if (after === before) return;
+    this.editing = false;
+    this.history.set(after);
+    const id = this.selectedId();
+    if (id && !findNode(after.present, id)) this.selectedId.set(null);
+    this.status.set(message);
+  }
+
+  protected reset(): void {
+    this.apply(starterPage());
+    this.selectedId.set(null);
+    this.status.set('Page reset to the starter layout.');
+  }
+
+  protected setDevice(id: DeviceId): void {
+    this.device.set(id);
+    this.status.set(`${DEVICES.find((d) => d.id === id)?.label} preview.`);
+  }
+
+  protected onKeydown(event: KeyboardEvent): void {
+    const origin = event.composedPath()[0];
+    if (
+      origin instanceof HTMLInputElement ||
+      origin instanceof HTMLTextAreaElement ||
+      origin instanceof HTMLSelectElement ||
+      (origin instanceof HTMLElement && origin.isContentEditable)
+    ) {
+      return;
+    }
+    const mod = event.metaKey || event.ctrlKey;
+    const key = event.key.toLowerCase();
+    if (mod && key === 'z') {
+      event.preventDefault();
+      if (event.shiftKey) this.redo();
+      else this.undo();
+    } else if (mod && key === 'y') {
+      event.preventDefault();
+      this.redo();
+    } else if (mod && key === 'd') {
+      event.preventDefault();
+      this.duplicateSelected();
+    } else if (!mod && (key === 'delete' || key === 'backspace') && this.selectedId()) {
+      event.preventDefault();
+      this.removeSelected();
+    }
   }
 
   protected onCanvasClick(event: Event): void {

@@ -1,6 +1,50 @@
-<div class="lab__panel p-3 ub">
+<div class="lab__panel p-3 ub" (keydown)="onKeydown($event)">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h3 class="h6 text-uppercase text-body-secondary mb-0">UI builder</h3>
+    <div class="d-flex flex-wrap gap-2">
+      <div class="btn-group btn-group-sm" role="group" aria-label="Device preview">
+        @for (d of devices; track d.id) {
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            [class.active]="device() === d.id"
+            [attr.aria-label]="d.label"
+            [attr.aria-pressed]="device() === d.id"
+            (click)="setDevice(d.id)"
+          >
+            {{ d.label }}
+          </button>
+        }
+      </div>
+      <div class="btn-group btn-group-sm" role="group" aria-label="History">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          aria-label="Undo"
+          [disabled]="!canUndo()"
+          (click)="undo()"
+        >
+          Undo
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          aria-label="Redo"
+          [disabled]="!canRedo()"
+          (click)="redo()"
+        >
+          Redo
+        </button>
+      </div>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        aria-label="Reset"
+        (click)="reset()"
+      >
+        Reset
+      </button>
+    </div>
   </div>
   <p class="small text-body-secondary">
     Add components (click or drag), nest them inside containers, edit their properties, then copy
@@ -156,6 +200,7 @@
                   [attr.data-prop]="field.key"
                   [value]="value(field.key)"
                   (input)="setProp(field, $any($event.target).value)"
+                  (focus)="beginEdit()"
                 ></textarea>
               }
               @case ('number') {
@@ -171,6 +216,7 @@
                   [attr.max]="field.max"
                   [value]="value(field.key)"
                   (input)="setProp(field, $any($event.target).value)"
+                  (focus)="beginEdit()"
                 />
               }
               @default {
@@ -184,6 +230,7 @@
                   [attr.data-prop]="field.key"
                   [value]="value(field.key)"
                   (input)="setProp(field, $any($event.target).value)"
+                  (focus)="beginEdit()"
                 />
               }
             }
@@ -202,7 +249,9 @@
         <div
           class="ub__canvas"
           role="group"
-          aria-label="Page canvas"
+          aria-label="Page canvas. Delete removes, Ctrl or Cmd+D duplicates, Ctrl or Cmd+Z undoes."
+          tabindex="0"
+          [style.width]="deviceWidth()"
           [appShadowHtml]="pageHtml()"
           [css]="canvasCss()"
           (click)="onCanvasClick($event)"
