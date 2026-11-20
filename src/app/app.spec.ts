@@ -46,6 +46,7 @@ describe('App', () => {
       'experience',
       'skills',
       'projects',
+      'ui-lab',
       'education',
       'contact',
     ]);
@@ -62,6 +63,7 @@ describe('App', () => {
       '#experience',
       '#skills',
       '#projects',
+      '#ui-lab',
       '#education',
       '#contact',
     ]);
