@@ -296,3 +296,10 @@ export function updateProps(root: UbNode, id: string, patch: Partial<UbNode['pro
   });
   return changed ? { ...root, children } : root;
 }
+
+/** Moves the id counter past every `n<number>` id in a loaded tree so new nodes never collide. */
+export function reserveIds(root: UbNode): void {
+  const match = /^n(\d+)$/.exec(root.id);
+  if (match) counter = Math.max(counter, Number(match[1]));
+  root.children.forEach(reserveIds);
+}
