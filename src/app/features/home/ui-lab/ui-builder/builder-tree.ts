@@ -267,6 +267,7 @@ export function moveNode(root: UbNode, id: string, parentId: string, index: numb
   const node = findNode(root, id)!;
   const from = findParent(root, id)!;
   const adjusted = from.parent.id === parentId && from.index < index ? index - 1 : index;
+  if (from.parent.id === parentId && adjusted === from.index) return root;
   const without = removeNode(root, id);
   return insertNode(without, node, parentId, adjusted);
 }

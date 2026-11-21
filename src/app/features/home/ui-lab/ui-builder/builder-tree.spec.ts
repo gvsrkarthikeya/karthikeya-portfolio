@@ -81,4 +81,13 @@ describe('builder tree', () => {
     expect(findNode(next, button.id)!.props['variant']).toBe('outline');
     expect(findNode(root, button.id)!.props['variant']).toBe('solid');
   });
+
+  it('returns the identical root when a node is moved onto its own position', () => {
+    const [a, b] = [createNode('text'), createNode('text')];
+    const root = createNode('stack', {}, [a, b]);
+    expect(moveNode(root, a.id, root.id, 0)).toBe(root);
+    expect(moveNode(root, a.id, root.id, 1)).toBe(root);
+    expect(moveNode(root, b.id, root.id, 1)).toBe(root);
+    expect(moveNode(root, b.id, root.id, 2)).toBe(root);
+  });
 });

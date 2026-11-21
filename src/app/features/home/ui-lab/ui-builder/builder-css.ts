@@ -141,6 +141,10 @@ h4.ub-heading { font-size: 1rem; }
 
 /** Editor-only affordances, appended to the preview but never exported. */
 export const EDITOR_CSS = `
+:host { container-type: inline-size; }
+@container (max-width: 40rem) {
+  .ub-grid { grid-template-columns: 1fr; }
+}
 .ub-empty {
   padding: 0.9rem;
   font-size: 0.8rem;

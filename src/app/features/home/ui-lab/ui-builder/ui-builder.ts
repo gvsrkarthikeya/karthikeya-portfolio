@@ -376,7 +376,8 @@ export class UiBuilder {
     const node = findNode(root, id);
     if (!node) return null;
     const rect = el.getBoundingClientRect();
-    const host = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    // The indicator is positioned inside the stage, which is wider than a centred tablet/mobile canvas.
+    const host = (event.currentTarget as HTMLElement).parentElement!.getBoundingClientRect();
     const box = (line: boolean, top: number, height: number): DropBox => ({
       top: top - host.top,
       left: rect.left - host.left,

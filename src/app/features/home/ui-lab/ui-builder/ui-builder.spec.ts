@@ -322,6 +322,41 @@ describe('UiBuilder', () => {
       expect(page().querySelector('h1')!.textContent).toBe(original);
     });
 
+    it('positions the drop indicator relative to the stage even when the canvas is centred', async () => {
+      const canvas = el.querySelector<HTMLElement>('.ub__canvas')!;
+      const stage = canvas.parentElement!;
+      const rect = (left: number, top: number, w: number, h: number) =>
+        ({ left, top, right: left + w, bottom: top + h, width: w, height: h }) as DOMRect;
+      stage.getBoundingClientRect = () => rect(100, 50, 900, 400);
+      canvas.getBoundingClientRect = () => rect(300, 50, 500, 400);
+      const heading = page().querySelector<HTMLElement>('h1')!;
+      heading.getBoundingClientRect = () => rect(320, 80, 460, 40);
+      const dragEvent = (type: string, y = 0) =>
+        Object.assign(new Event(type, { bubbles: true, cancelable: true, composed: true }), {
+          clientX: 400,
+          clientY: y,
+          dataTransfer: null,
+        });
+      const fire = (type: string, y: number) => heading.dispatchEvent(dragEvent(type, y));
+      el.querySelector('button[aria-label="Add Badge"]')!.dispatchEvent(dragEvent('dragstart'));
+      fire('dragover', 85);
+      await settle();
+      const drop = el.querySelector<HTMLElement>('.ub__drop')!;
+      expect(drop.style.left).toBe('220px');
+      expect(drop.style.top).toBe('30px');
+    });
+
+    it('keeps Redo when a node is dropped back onto its own position', async () => {
+      await clickPalette('Badge');
+      await press('Undo');
+      const headingId = idOf('h1');
+      cmp.dropAt(idOf('.ub-stack'), 0, { kind: 'move', id: headingId });
+      await settle();
+      expect(el.querySelector<HTMLButtonElement>('button[aria-label="Redo"]')!.disabled).toBe(
+        false,
+      );
+    });
+
     it('announces actions in the live region', async () => {
       await press('Reset');
       expect(status()).toContain('reset');
