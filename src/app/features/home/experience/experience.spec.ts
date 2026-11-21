@@ -53,4 +53,24 @@ describe('Experience', () => {
 
     expect(element.querySelectorAll('ul li').length).toBe(3);
   });
+
+  it('notes the former company name when the company was renamed', async () => {
+    const fixture = TestBed.createComponent(Experience);
+    fixture.componentRef.setInput('entries', [
+      { ...ENTRIES[1], company: 'Initrode', formerName: 'Initech' },
+    ]);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('h3')?.textContent?.trim()).toBe('Engineer · Initrode');
+    expect(element.querySelector('.experience__former')?.textContent?.trim()).toBe(
+      'formerly Initech',
+    );
+  });
+
+  it('shows no former name for companies that were not renamed', async () => {
+    const element = await render();
+
+    expect(element.querySelector('.experience__former')).toBeNull();
+  });
 });

@@ -22,6 +22,8 @@ export type YearMonth = string;
 
 export interface Experience {
   company: string;
+  /** The company's earlier name, when it was renamed after the role began. */
+  formerName?: string;
   role: string;
   startDate: YearMonth;
   /** Omitted for the current role. */
