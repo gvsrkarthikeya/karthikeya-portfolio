@@ -11,4 +11,9 @@ describe('builder css', () => {
     expect(EXPORT_CSS).not.toContain('@container');
     expect(EXPORT_CSS).not.toContain('container-type');
   });
+
+  it('draws the divider from the text colour so it stays visible on any background', () => {
+    const rule = /\.ub-divider\s*\{([^}]*)\}/.exec(EXPORT_CSS)![1];
+    expect(rule).toMatch(/border-top:[^;]*color-mix\(in srgb, currentColor/);
+  });
 });

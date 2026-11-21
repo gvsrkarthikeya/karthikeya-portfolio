@@ -132,7 +132,7 @@ h4.ub-heading { font-size: 1rem; }
 }
 .ub-badge.ub-tone-neutral { color: var(--ub-text); background: var(--ub-raised); }
 .ub-badge.ub-tone-danger { background: var(--ub-danger); color: #ffffff; }
-.ub-divider { width: 100%; margin: 0; border: 0; border-top: 1px solid var(--ub-border); }
+.ub-divider { width: 100%; margin: 0; border: 0; border-top: 1px solid color-mix(in srgb, currentColor 40%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
   .ub-btn { transition: none; }
