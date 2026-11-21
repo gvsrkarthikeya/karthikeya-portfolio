@@ -90,4 +90,11 @@ describe('Hero', () => {
       expect(cta?.querySelector('.hero__cta-label')?.textContent?.trim()).toBe(label);
     }
   });
+
+  it('insets its content from the background edges by more than the row gutter', async () => {
+    const section = (await render()).querySelector('section#home')!;
+
+    expect(section.classList).toContain('px-4');
+    expect(section.classList).toContain('px-lg-5');
+  });
 });
