@@ -11,9 +11,7 @@ describe('hero block lift model', () => {
     });
 
     it('returns less lift for a block three columns away', () => {
-      expect(blockLift(0, 2, { x: 0.5, y: 0.5 })).toBeLessThan(
-        blockLift(3, 2, { x: 0.5, y: 0.5 }),
-      );
+      expect(blockLift(0, 2, { x: 0.5, y: 0.5 })).toBeLessThan(blockLift(3, 2, { x: 0.5, y: 0.5 }));
     });
 
     it('stays within the unit range at the pointer corners', () => {

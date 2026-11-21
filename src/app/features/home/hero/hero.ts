@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { Profile, SocialLinkKind } from '../../../models';
+import { BLOCK_COLS, BLOCK_ROWS, Pointer, blockLift, normalisePointer } from './hero-blocks';
 
 @Component({
   selector: 'app-hero',
@@ -35,6 +36,26 @@ export class Hero {
   protected readonly linkedinUrl = computed(() => this.linkUrl('linkedin'));
 
   protected readonly typed = signal('');
+  protected readonly blocks = Array.from({ length: BLOCK_COLS * BLOCK_ROWS }, (_, index) => ({
+    col: index % BLOCK_COLS,
+    row: Math.floor(index / BLOCK_COLS),
+  }));
+  protected readonly pointer = signal<Pointer | null>(null);
+
+  protected lift(col: number, row: number): number {
+    return blockLift(col, row, this.pointer());
+  }
+
+  protected onBlocksMove(event: MouseEvent): void {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const hero = event.currentTarget as HTMLElement;
+    this.pointer.set(normalisePointer(event.clientX, event.clientY, hero.getBoundingClientRect()));
+  }
+
+  protected onBlocksLeave(): void {
+    this.pointer.set(null);
+  }
 
   private readonly phrases = [
     'Angular & React',
