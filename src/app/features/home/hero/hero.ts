@@ -26,11 +26,15 @@ export class Hero {
     return (first.charAt(0) + last.charAt(0)).toUpperCase();
   });
 
+  protected readonly photoFailed = signal(false);
+  protected readonly photoUrl = computed(() =>
+    this.photoFailed() ? undefined : this.profile().avatarUrl || undefined,
+  );
+
   protected readonly emailUrl = computed(() => this.linkUrl('email'));
   protected readonly linkedinUrl = computed(() => this.linkUrl('linkedin'));
 
   protected readonly typed = signal('');
-  protected readonly tilt = signal('');
 
   private readonly phrases = [
     'Angular & React',
@@ -69,20 +73,6 @@ export class Hero {
       tick();
       destroyRef.onDestroy(() => clearTimeout(timer));
     });
-  }
-
-  protected onTilt(event: MouseEvent): void {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = (event.clientX - box.left) / box.width - 0.5;
-    const y = (event.clientY - box.top) / box.height - 0.5;
-    this.tilt.set(
-      `rotateX(${(-y * 24).toFixed(1)}deg) rotateY(${(x * 24).toFixed(1)}deg) scale(1.06)`,
-    );
-  }
-
-  protected resetTilt(): void {
-    this.tilt.set('');
   }
 
   private linkUrl(kind: SocialLinkKind): string | undefined {

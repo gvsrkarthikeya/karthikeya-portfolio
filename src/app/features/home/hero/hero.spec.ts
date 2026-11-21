@@ -97,4 +97,83 @@ describe('Hero', () => {
     expect(section.classList).toContain('px-4');
     expect(section.classList).toContain('px-lg-5');
   });
+
+  it('shows the avatar photo with descriptive alt text when one is set', async () => {
+    const element = await render({ ...PROFILE, avatarUrl: 'images/ada.webp' });
+    const photo = element.querySelector<HTMLImageElement>('img.hero__photo');
+
+    expect(photo?.getAttribute('src')).toBe('images/ada.webp');
+    expect(photo?.alt).toBe('Portrait of Ada Lovelace');
+    expect(photo?.getAttribute('width')).toBe('224');
+    expect(photo?.getAttribute('height')).toBe('224');
+    expect(element.querySelector('.hero__initials')).toBeNull();
+  });
+
+  it('falls back to initials when the avatar photo fails to load', async () => {
+    const fixture = TestBed.createComponent(Hero);
+    fixture.componentRef.setInput('profile', { ...PROFILE, avatarUrl: 'images/missing.webp' });
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    element.querySelector('img.hero__photo')!.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+
+    expect(element.querySelector('img.hero__photo')).toBeNull();
+    expect(element.querySelector('.hero__initials')?.textContent?.trim()).toBe('AL');
+  });
+
+  describe('profile photo interactions', () => {
+    // jsdom does not implement modal dialogs yet.
+    beforeAll(() => {
+      const proto = HTMLDialogElement.prototype;
+      proto.showModal ??= function (this: HTMLDialogElement) {
+        this.open = true;
+      };
+      proto.close ??= function (this: HTMLDialogElement) {
+        this.open = false;
+      };
+    });
+
+    async function renderWithPhoto() {
+      const fixture = TestBed.createComponent(Hero);
+      fixture.componentRef.setInput('profile', { ...PROFILE, avatarUrl: 'images/ada.webp' });
+      await fixture.whenStable();
+      return { fixture, element: fixture.nativeElement as HTMLElement };
+    }
+
+    it('does not rotate the photo to follow the cursor', async () => {
+      const { fixture, element } = await renderWithPhoto();
+      const trigger = element.querySelector<HTMLElement>('.hero__photo-trigger')!;
+
+      trigger.dispatchEvent(new MouseEvent('mousemove', { clientX: 5, clientY: 5, bubbles: true }));
+      await fixture.whenStable();
+
+      expect(element.querySelector<HTMLElement>('img.hero__photo')!.style.transform).toBe('');
+    });
+
+    it('opens an enlarged photo in a labelled dialog when clicked', async () => {
+      const { fixture, element } = await renderWithPhoto();
+      const trigger = element.querySelector<HTMLButtonElement>('button.hero__photo-trigger')!;
+
+      expect(trigger.getAttribute('aria-label')).toBe('Enlarge photo of Ada Lovelace');
+      trigger.click();
+      await fixture.whenStable();
+
+      const dialog = element.querySelector<HTMLDialogElement>('dialog.hero__lightbox')!;
+      expect(dialog.open).toBe(true);
+      expect(dialog.getAttribute('aria-label')).toBe('Photo of Ada Lovelace');
+      expect(dialog.querySelector('img')?.getAttribute('src')).toBe('images/ada.webp');
+    });
+
+    it('closes the enlarged photo from its close button', async () => {
+      const { fixture, element } = await renderWithPhoto();
+      element.querySelector<HTMLButtonElement>('button.hero__photo-trigger')!.click();
+      await fixture.whenStable();
+
+      element.querySelector<HTMLButtonElement>('.hero__lightbox-close')!.click();
+      await fixture.whenStable();
+
+      expect(element.querySelector<HTMLDialogElement>('dialog.hero__lightbox')!.open).toBe(false);
+    });
+  });
 });

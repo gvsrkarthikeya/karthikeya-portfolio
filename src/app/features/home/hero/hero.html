@@ -7,11 +7,28 @@
   <div class="hero__bg" aria-hidden="true"></div>
   <div class="row align-items-center g-4 g-lg-5">
     <div class="col-12 col-md-auto">
-      <div class="hero__tilt" (mousemove)="onTilt($event)" (mouseleave)="resetTilt()">
-        <div class="hero__initials" aria-hidden="true" [style.transform]="tilt()">
+      @if (photoUrl(); as photo) {
+        <button
+          type="button"
+          class="hero__photo-trigger"
+          [attr.aria-label]="'Enlarge photo of ' + profile().displayName"
+          (click)="lightbox.showModal()"
+        >
+          <img
+            class="hero__photo"
+            [src]="photo"
+            [alt]="'Portrait of ' + profile().displayName"
+            width="224"
+            height="224"
+            fetchpriority="high"
+            (error)="photoFailed.set(true)"
+          />
+        </button>
+      } @else {
+        <div class="hero__initials" aria-hidden="true">
           {{ initials() }}
         </div>
-      </div>
+      }
     </div>
     <div class="col">
       <h1 id="hero-heading" class="display-5 fw-bold mb-2">{{ profile().displayName }}</h1>
@@ -98,4 +115,22 @@
       </div>
     </div>
   </div>
+  <dialog
+    #lightbox
+    class="hero__lightbox"
+    [attr.aria-label]="'Photo of ' + profile().displayName"
+    (click)="$event.target === lightbox && lightbox.close()"
+  >
+    <button
+      type="button"
+      class="hero__lightbox-close"
+      aria-label="Close photo"
+      (click)="lightbox.close()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+    @if (photoUrl(); as photo) {
+      <img class="hero__lightbox-photo" [src]="photo" alt="" width="448" height="448" />
+    }
+  </dialog>
 </section>
