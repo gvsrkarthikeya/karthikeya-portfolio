@@ -1,78 +1,367 @@
 import { TestBed } from '@angular/core/testing';
+import { STORAGE_KEY, deserialize, serialize } from './builder-storage';
+import { renderPage } from './builder-render';
 import { UiBuilder } from './ui-builder';
+import { createNode } from './builder-tree';
 
 describe('UiBuilder', () => {
   let el: HTMLElement;
   let fixture: ReturnType<typeof TestBed.createComponent<UiBuilder>>;
+  let cmp: UiBuilder;
 
-  const slots = () => Array.from(el.querySelectorAll<HTMLElement>('.ub__slot'));
-  const tags = () => slots().map((s) => s.querySelector('.ub__tag')?.textContent?.trim());
-  const click = async (selector: string, index = 0) => {
-    el.querySelectorAll<HTMLElement>(selector)[index].click();
-    await fixture.whenStable();
+  const page = () => el.querySelector<HTMLElement>('.ub__canvas')!.shadowRoot!;
+  const idOf = (selector: string) => page().querySelector(selector)!.getAttribute('data-ub-id')!;
+  const code = () => el.querySelector('.ub__code')?.textContent ?? '';
+  const status = () => el.querySelector('[role="status"]')?.textContent ?? '';
+  const settle = () => fixture.whenStable();
+  const clickPalette = async (label: string) => {
+    el.querySelector<HTMLElement>(`button[aria-label="Add ${label}"]`)!.click();
+    await settle();
+  };
+  const clickNode = async (selector: string) => {
+    page().querySelector<HTMLElement>(selector)!.click();
+    await settle();
   };
 
   beforeEach(async () => {
+    localStorage.clear();
     fixture = TestBed.createComponent(UiBuilder);
     el = fixture.nativeElement;
-    await fixture.whenStable();
+    cmp = fixture.componentInstance;
+    await settle();
   });
 
-  it('starts with a sample page', () => {
-    expect(tags()).toEqual(['Navbar', 'Hero', 'Cards', 'Footer']);
+  it('renders the starter page inside a shadow root, keeping headings out of the page', () => {
+    expect(el.querySelector('h1, section')).toBeNull();
+    expect(page().querySelector('h1')).toBeTruthy();
   });
 
-  it('adds a block from the palette and selects it', async () => {
-    await click('.ub__chip', 4); // Button
-    expect(tags().at(-1)).toBe('Button');
-    expect(slots().at(-1)?.classList).toContain('ub__slot--selected');
-    expect(el.textContent).toContain('Editing: Button');
+  it('selects a node when it is clicked inside the shadow root', async () => {
+    await clickNode('h1');
+    expect(el.textContent).toContain('Editing: Heading');
   });
 
-  it('moves and removes blocks with the toolbar buttons', async () => {
-    await click('button[aria-label="Move Hero up"]');
-    expect(tags().slice(0, 2)).toEqual(['Hero', 'Navbar']);
-    await click('button[aria-label="Remove Hero"]');
-    expect(tags()).toEqual(['Navbar', 'Cards', 'Footer']);
+  it('inserts a palette component inside the selected container', async () => {
+    await clickPalette('Card');
+    await clickPalette('Button');
+    expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
 
-  it('disables moving the first block up and the last block down', () => {
-    const up = el.querySelector<HTMLButtonElement>('button[aria-label="Move Navbar up"]');
-    const down = el.querySelector<HTMLButtonElement>('button[aria-label="Move Footer down"]');
-    expect(up?.disabled).toBe(true);
-    expect(down?.disabled).toBe(true);
+  it('appends to the root when nothing is selected', async () => {
+    await clickPalette('Badge');
+    expect(page().querySelector('.ub-section > .ub-badge')).toBeTruthy();
+    expect(status()).toContain('Badge added');
   });
 
-  it('edits the selected block and reflects it in preview and export', async () => {
-    await click('.ub__slot', 1); // Hero
-    const input = el.querySelector<HTMLInputElement>('#ub-title')!;
-    input.value = 'Hello <world>';
-    input.dispatchEvent(new Event('input'));
-    await fixture.whenStable();
-    expect(
-      slots()[1].querySelector('.ub__preview')?.shadowRoot?.querySelector('h1')?.textContent,
-    ).toBe('Hello <world>');
-    expect(el.querySelector('.ub__code')?.textContent).toContain('Hello &lt;world&gt;');
+  it('nests a dropped button inside a card via dropAt', async () => {
+    await clickPalette('Card');
+    const cardId = idOf('.ub-card');
+    cmp.dropAt(cardId, 0, { kind: 'new', type: 'button' });
+    await settle();
+    expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
 
-  it('switches the export between HTML and CSS', async () => {
-    expect(el.querySelector('.ub__code')?.textContent).toContain('class="ub-navbar');
-    await click('.btn-group[aria-label="Export format"] button', 1);
-    expect(el.querySelector('.ub__code')?.textContent).toContain('.ub-btn');
+  it('rejects dropping a container into its own descendant and keeps the tree', async () => {
+    await clickPalette('Card');
+    const cardId = idOf('.ub-card');
+    cmp.dropAt(cardId, 0, { kind: 'new', type: 'stack' });
+    await settle();
+    const before = code();
+    const innerId = page().querySelector('.ub-card .ub-stack')!.getAttribute('data-ub-id')!;
+    cmp.dropAt(innerId, 0, { kind: 'move', id: cardId });
+    await settle();
+    expect(code()).toBe(before);
+    expect(status()).toContain("can't");
   });
 
-  it('clears the canvas and shows the empty hint', async () => {
-    await click('button.btn-outline-secondary', 1); // Clear
-    expect(slots()).toHaveLength(0);
-    expect(el.querySelector('.ub__empty')).toBeTruthy();
+  it('inserts a preset subtree', async () => {
+    await clickPalette('Pricing card');
+    expect(page().querySelector('.ub-card .ub-btn')).toBeTruthy();
   });
 
-  it('keeps preview markup out of the page so headings and landmarks do not leak', () => {
-    expect(el.querySelector('h1, section, nav')).toBeNull();
-    expect(slots()[1].querySelector('.ub__preview')?.shadowRoot?.querySelector('h1')).toBeTruthy();
+  describe('properties and layers', () => {
+    const control = (key: string) =>
+      el.querySelector<HTMLElement>(`.ub__props [data-prop="${key}"]`)!;
+    const press = async (label: string) => {
+      el.querySelector<HTMLElement>(`button[aria-label="${label}"]`)!.click();
+      await settle();
+    };
+
+    it('shows controls for exactly the button schema when a button is selected', async () => {
+      await clickNode('.ub-btn');
+      const keys = Array.from(el.querySelectorAll<HTMLElement>('.ub__props [data-prop]')).map(
+        (c) => c.dataset['prop'],
+      );
+      expect(keys).toEqual([
+        'label',
+        'variant',
+        'tone',
+        'size',
+        'fullWidth',
+        'disabled',
+        'icon',
+        'iconPosition',
+        'href',
+      ]);
+    });
+
+    it('renders toggles as switches and selects with their options', async () => {
+      await clickNode('.ub-btn');
+      expect(control('fullWidth').getAttribute('role')).toBe('switch');
+      expect(control('variant').querySelectorAll('option')).toHaveLength(4);
+    });
+
+    it('updates the exported class when the variant changes', async () => {
+      await clickNode('.ub-btn');
+      const select = control('variant') as HTMLSelectElement;
+      select.value = 'outline';
+      select.dispatchEvent(new Event('change'));
+      await settle();
+      expect(code()).toContain('ub-btn--outline');
+    });
+
+    it('updates text props as the user types', async () => {
+      await clickNode('h1');
+      const input = control('text') as HTMLInputElement;
+      input.value = 'Hello <b>';
+      input.dispatchEvent(new Event('input'));
+      await settle();
+      expect(page().querySelector('h1')?.textContent).toBe('Hello <b>');
+      expect(code()).toContain('Hello &lt;b&gt;');
+    });
+
+    it('lists layers with indentation levels and selects on click', async () => {
+      const items = Array.from(el.querySelectorAll<HTMLElement>('[role="tree"] [role="treeitem"]'));
+      expect(items).toHaveLength(5);
+      expect(items.map((i) => i.getAttribute('aria-level'))).toEqual(['1', '2', '3', '3', '3']);
+      items[2].click();
+      await settle();
+      expect(el.textContent).toContain('Editing: Heading');
+      expect(el.querySelectorAll('[role="treeitem"][aria-selected="true"]')).toHaveLength(1);
+    });
+
+    it('removing a selected container clears selection and drops its children', async () => {
+      await clickPalette('Card');
+      await clickPalette('Button');
+      await clickNode('.ub-card');
+      await press('Delete');
+      expect(page().querySelector('.ub-card')).toBeNull();
+      expect(page().querySelectorAll('.ub-btn')).toHaveLength(1);
+      expect(el.textContent).toContain('Select a component');
+    });
+
+    it('duplicates the selection as a sibling', async () => {
+      await clickNode('h1');
+      await press('Duplicate');
+      expect(page().querySelectorAll('h1')).toHaveLength(2);
+    });
+
+    it('moves the selection up and down among its siblings', async () => {
+      await clickNode('.ub-text');
+      await press('Move up');
+      const order = Array.from(page().querySelectorAll('.ub-stack > *')).map((n) => n.tagName);
+      expect(order).toEqual(['P', 'H1', 'BUTTON']);
+      await press('Move down');
+      await press('Move down');
+      expect(page().querySelector('.ub-stack')!.lastElementChild!.tagName).toBe('P');
+    });
+
+    it('does not offer delete, duplicate or move for the root', async () => {
+      el.querySelector<HTMLElement>('[role="treeitem"]')!.click();
+      await settle();
+      for (const label of ['Delete', 'Duplicate', 'Move up', 'Move down']) {
+        expect(el.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)!.disabled).toBe(
+          true,
+        );
+      }
+    });
   });
 
-  it('keeps the interactive preview inert', () => {
-    expect(el.querySelector('.ub__preview')?.hasAttribute('inert')).toBe(true);
+  describe('history, shortcuts, device preview and persistence', () => {
+    const key = async (k: string, init: KeyboardEventInit = {}, target?: EventTarget) => {
+      (target ?? el.querySelector('.ub')!).dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: k,
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+          ...init,
+        }),
+      );
+      await settle();
+    };
+    const press = async (label: string) => {
+      el.querySelector<HTMLElement>(`button[aria-label="${label}"]`)!.click();
+      await settle();
+    };
+    const badges = () => page().querySelectorAll('.ub-badge').length;
+
+    it('undoes an insert with Cmd/Ctrl+Z and redoes with Shift+Z', async () => {
+      await clickPalette('Badge');
+      expect(badges()).toBe(1);
+      await key('z', { metaKey: true });
+      expect(badges()).toBe(0);
+      await key('z', { metaKey: true, shiftKey: true });
+      expect(badges()).toBe(1);
+      await key('z', { ctrlKey: true });
+      expect(badges()).toBe(0);
+      expect(status()).toContain('Undid');
+    });
+
+    it('offers Undo and Redo buttons with disabled states', async () => {
+      const undoBtn = () => el.querySelector<HTMLButtonElement>('button[aria-label="Undo"]')!;
+      expect(undoBtn().disabled).toBe(true);
+      await clickPalette('Badge');
+      expect(undoBtn().disabled).toBe(false);
+      await press('Undo');
+      expect(el.querySelector<HTMLButtonElement>('button[aria-label="Redo"]')!.disabled).toBe(
+        false,
+      );
+    });
+
+    it('clears the selection when undo removes the selected node', async () => {
+      await clickPalette('Badge');
+      await key('z', { metaKey: true });
+      expect(el.textContent).toContain('Select a component');
+    });
+
+    it('deletes the selection with Delete and duplicates with Cmd+D', async () => {
+      await clickNode('h1');
+      await key('d', { metaKey: true });
+      expect(page().querySelectorAll('h1')).toHaveLength(2);
+      await key('Delete');
+      expect(page().querySelectorAll('h1')).toHaveLength(1);
+    });
+
+    it('does not run shortcuts while typing in a properties input', async () => {
+      await clickNode('h1');
+      const input = el.querySelector<HTMLInputElement>('.ub__props [data-prop="text"]')!;
+      await key('Delete', {}, input);
+      await key('z', { metaKey: true }, input);
+      await key('d', { metaKey: true }, input);
+      expect(page().querySelectorAll('h1')).toHaveLength(1);
+      expect(el.textContent).toContain('Editing: Heading');
+    });
+
+    it('switches device preview widths and reports the pressed state', async () => {
+      const canvas = () => el.querySelector<HTMLElement>('.ub__canvas')!;
+      const btn = (name: string) =>
+        el.querySelector<HTMLButtonElement>(
+          `[aria-label="Device preview"] button[aria-label="${name}"]`,
+        )!;
+      expect(canvas().style.width).toBe('100%');
+      expect(btn('Desktop').getAttribute('aria-pressed')).toBe('true');
+      btn('Tablet').click();
+      await settle();
+      expect(canvas().style.width).toBe('768px');
+      btn('Mobile').click();
+      await settle();
+      expect(canvas().style.width).toBe('375px');
+      expect(btn('Mobile').getAttribute('aria-pressed')).toBe('true');
+      expect(btn('Desktop').getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('exports exactly the non-editor render of the page', async () => {
+      await clickPalette('Pricing card');
+      expect(code()).toBe(renderPage(cmp['root'](), { editor: false }));
+      expect(code()).not.toContain('data-ub');
+    });
+
+    it('switches the export between HTML and CSS', async () => {
+      el.querySelectorAll<HTMLElement>('[aria-label="Export format"] button')[1].click();
+      await settle();
+      expect(code()).toContain('.ub-btn');
+    });
+
+    it('autosaves to localStorage after a change', async () => {
+      await clickPalette('Badge');
+      const saved = deserialize(localStorage.getItem(STORAGE_KEY));
+      expect(saved).toEqual(cmp['root']());
+    });
+
+    it('restores a saved page on load', async () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        serialize(createNode('section', {}, [createNode('badge', { text: 'Saved' })])),
+      );
+      const again = TestBed.createComponent(UiBuilder);
+      await again.whenStable();
+      const shadow = again.nativeElement.querySelector('.ub__canvas').shadowRoot as ShadowRoot;
+      expect(shadow.textContent).toContain('Saved');
+    });
+
+    it('falls back to the starter page when stored JSON is corrupt', async () => {
+      localStorage.setItem(STORAGE_KEY, '{bad json');
+      const again = TestBed.createComponent(UiBuilder);
+      await again.whenStable();
+      const shadow = again.nativeElement.querySelector('.ub__canvas').shadowRoot as ShadowRoot;
+      expect(shadow.querySelector('h1')).toBeTruthy();
+    });
+
+    it('resets to the starter page and the reset can be undone', async () => {
+      await clickPalette('Badge');
+      await press('Reset');
+      expect(badges()).toBe(0);
+      expect(page().querySelector('h1')).toBeTruthy();
+      await press('Undo');
+      expect(badges()).toBe(1);
+    });
+
+    it('coalesces typing in a text field into one undo step per focus', async () => {
+      await clickNode('h1');
+      const original = page().querySelector('h1')!.textContent;
+      const input = el.querySelector<HTMLInputElement>('.ub__props [data-prop="text"]')!;
+      input.dispatchEvent(new Event('focus'));
+      for (const v of ['a', 'ab', 'abc']) {
+        input.value = v;
+        input.dispatchEvent(new Event('input'));
+        await settle();
+      }
+      expect(page().querySelector('h1')!.textContent).toBe('abc');
+      await press('Undo');
+      expect(page().querySelector('h1')!.textContent).toBe(original);
+    });
+
+    it('positions the drop indicator relative to the stage even when the canvas is centred', async () => {
+      const canvas = el.querySelector<HTMLElement>('.ub__canvas')!;
+      const stage = canvas.parentElement!;
+      const rect = (left: number, top: number, w: number, h: number) =>
+        ({ left, top, right: left + w, bottom: top + h, width: w, height: h }) as DOMRect;
+      stage.getBoundingClientRect = () => rect(100, 50, 900, 400);
+      canvas.getBoundingClientRect = () => rect(300, 50, 500, 400);
+      const heading = page().querySelector<HTMLElement>('h1')!;
+      heading.getBoundingClientRect = () => rect(320, 80, 460, 40);
+      const dragEvent = (type: string, y = 0) =>
+        Object.assign(new Event(type, { bubbles: true, cancelable: true, composed: true }), {
+          clientX: 400,
+          clientY: y,
+          dataTransfer: null,
+        });
+      const fire = (type: string, y: number) => heading.dispatchEvent(dragEvent(type, y));
+      el.querySelector('button[aria-label="Add Badge"]')!.dispatchEvent(dragEvent('dragstart'));
+      fire('dragover', 85);
+      await settle();
+      const drop = el.querySelector<HTMLElement>('.ub__drop')!;
+      expect(drop.style.left).toBe('220px');
+      expect(drop.style.top).toBe('30px');
+    });
+
+    it('keeps Redo when a node is dropped back onto its own position', async () => {
+      await clickPalette('Badge');
+      await press('Undo');
+      const headingId = idOf('h1');
+      cmp.dropAt(idOf('.ub-stack'), 0, { kind: 'move', id: headingId });
+      await settle();
+      expect(el.querySelector<HTMLButtonElement>('button[aria-label="Redo"]')!.disabled).toBe(
+        false,
+      );
+    });
+
+    it('announces actions in the live region', async () => {
+      await press('Reset');
+      expect(status()).toContain('reset');
+      await press('Undo');
+      expect(status().length).toBeGreaterThan(0);
+    });
   });
 });
