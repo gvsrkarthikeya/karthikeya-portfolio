@@ -14,7 +14,7 @@ export const PORTFOLIO_CONTENT: PortfolioContent = {
       'features end to end, from architectural design to delivery, and use AI-driven workflows ' +
       'for feature implementation, bug fixing, code reviews and testing.',
     portraitUrl: '',
-    avatarUrl: '',
+    avatarUrl: 'images/profile.webp',
     resumeUrl: 'resume/Karthikeya_Resume.pdf',
     socialLinks: [
       { kind: 'email', label: 'Email', url: 'mailto:gvsrkarthikeya@gmail.com' },
