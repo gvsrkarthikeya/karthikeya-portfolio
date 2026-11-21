@@ -50,7 +50,8 @@ export const PORTFOLIO_CONTENT: PortfolioContent = {
       ],
     },
     {
-      company: 'Prokarma Softech',
+      company: 'Concentrix Catalyst',
+      formerName: 'Prokarma Softech',
       role: 'Software Engineer',
       startDate: '2020-12',
       endDate: '2022-06',
