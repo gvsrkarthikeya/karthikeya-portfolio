@@ -122,6 +122,71 @@ describe('Hero', () => {
     expect(element.querySelector('.hero__initials')?.textContent?.trim()).toBe('AL');
   });
 
+  describe('block background', () => {
+    async function renderBlocks() {
+      const fixture = TestBed.createComponent(Hero);
+      fixture.componentRef.setInput('profile', PROFILE);
+      await fixture.whenStable();
+      return { fixture, element: fixture.nativeElement as HTMLElement };
+    }
+
+    it('renders 35 decorative blocks inside the hero background', async () => {
+      const { element } = await renderBlocks();
+
+      expect(element.querySelectorAll('.hero__bg[aria-hidden="true"] .hero__block')).toHaveLength(
+        35,
+      );
+    });
+
+    it('lifts the centre block when the pointer is at the hero centre', async () => {
+      const { fixture, element } = await renderBlocks();
+      const section = element.querySelector<HTMLElement>('section#home')!;
+      section.getBoundingClientRect = () => ({
+        left: 0,
+        top: 0,
+        width: 700,
+        height: 500,
+        right: 700,
+        bottom: 500,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      });
+
+      section.dispatchEvent(new MouseEvent('mousemove', { clientX: 350, clientY: 250 }));
+      await fixture.whenStable();
+
+      const centre = element.querySelector<HTMLElement>('.hero__block[data-col="3"][data-row="2"]');
+      expect(centre?.style.getPropertyValue('--lift')).toBe('1');
+    });
+
+    it('removes all pointer lift when the pointer leaves the hero', async () => {
+      const { fixture, element } = await renderBlocks();
+      const section = element.querySelector<HTMLElement>('section#home')!;
+      section.getBoundingClientRect = () => ({
+        left: 0,
+        top: 0,
+        width: 700,
+        height: 500,
+        right: 700,
+        bottom: 500,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      });
+      section.dispatchEvent(new MouseEvent('mousemove', { clientX: 350, clientY: 250 }));
+      await fixture.whenStable();
+
+      section.dispatchEvent(new MouseEvent('mouseleave'));
+      await fixture.whenStable();
+
+      const lifts = Array.from(element.querySelectorAll<HTMLElement>('.hero__block')).map((block) =>
+        block.style.getPropertyValue('--lift'),
+      );
+      expect(lifts.every((lift) => lift === '0')).toBe(true);
+    });
+  });
+
   describe('profile photo interactions', () => {
     // jsdom does not implement modal dialogs yet.
     beforeAll(() => {

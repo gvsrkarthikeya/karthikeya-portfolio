@@ -3,8 +3,27 @@
   class="hero py-5 px-4 px-lg-5 position-relative"
   tabindex="-1"
   aria-labelledby="hero-heading"
+  (mousemove)="onBlocksMove($event)"
+  (mouseleave)="onBlocksLeave()"
 >
-  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__bg" aria-hidden="true">
+    <div class="hero__blocks">
+      @for (block of blocks; track $index) {
+        <span
+          class="hero__block"
+          [attr.data-col]="block.col"
+          [attr.data-row]="block.row"
+          [style.--col]="block.col"
+          [style.--row]="block.row"
+          [style.--lift]="lift(block.col, block.row)"
+        >
+          <span class="hero__face hero__face--top"></span>
+          <span class="hero__face hero__face--left"></span>
+          <span class="hero__face hero__face--right"></span>
+        </span>
+      }
+    </div>
+  </div>
   <div class="row align-items-center g-4 g-lg-5">
     <div class="col-12 col-md-auto">
       @if (photoUrl(); as photo) {
